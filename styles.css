@@ -199,28 +199,27 @@ main {
   display: block;
 }
 
+/* Always visible, not hover-revealed -- a hover-only "reveal on mouseover"
+   version shipped first and was invisible (and so untappable) on any
+   touch device, since there's no hover state to trigger it. Matches
+   tuckermills-portfolio's own fractal-cameraroll-thumb-actions, an
+   already-proven always-visible bottom bar. */
 .catalog-thumb-actions {
   position: absolute;
-  inset: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  background: rgba(0, 0, 0, 0.45);
-  opacity: 0;
-  transition: opacity 0.2s ease;
-}
-
-.catalog-thumb:hover .catalog-thumb-actions,
-.catalog-thumb:focus-within .catalog-thumb-actions {
-  opacity: 1;
+  justify-content: space-between;
+  padding: 6px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0));
 }
 
 .thumb-action {
   appearance: none;
   -webkit-appearance: none;
-  width: 36px;
-  height: 36px;
+  width: 30px;
+  height: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -228,12 +227,11 @@ main {
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.9);
   cursor: pointer;
-  transition: background-color 0.2s ease, transform 0.1s ease;
+  transition: background-color 0.2s ease;
 }
 
 .thumb-action:hover {
   background: #fff;
-  transform: scale(1.06);
 }
 
 /* --- Footer ----------------------------------------------------------- */
