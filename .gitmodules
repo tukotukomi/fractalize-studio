@@ -1,0 +1,3 @@
+[submodule "fractalize-core"]
+	path = fractalize-core
+	url = https://github.com/tukotukomi/fractalize-core.git

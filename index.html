@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fractalize Studio</title>
+  <meta name="description" content="Turn any photo into a living, music-reactive fractal -- right in your browser.">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="fractalize-core/fractalize-core.css">
+</head>
+<body>
+  <header class="hero">
+    <h1 class="hero-title">Fractalize Studio</h1>
+    <p class="hero-tagline">Turn any photo into a living, music-reactive fractal.</p>
+  </header>
+
+  <main>
+    <section class="upload-card">
+      <label class="upload-dropzone" for="upload-input" data-upload-dropzone>
+        <svg class="upload-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="36px" height="36px" fill="#e3e3e3">
+          <path d="M440-320v-326L336-542l-56-58 200-200 200 200-56 58-104-104v326h-80ZM240-160q-33 0-56.5-23.5T160-240v-120h80v120h480v-120h80v120q0 33-23.5 56.5T720-160H240Z"/>
+        </svg>
+        <span class="upload-text">Drop a photo here, or click to choose one</span>
+        <input type="file" id="upload-input" accept="image/*" data-upload-input hidden>
+      </label>
+      <div class="upload-preview-row" data-upload-actions hidden>
+        <img class="upload-preview" data-upload-preview alt="">
+        <div class="upload-buttons">
+          <button type="button" class="action-btn" data-upload-fractal>Open as Fractal</button>
+          <button type="button" class="action-btn action-btn-secondary" data-upload-visualize>Visualize to Music</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="catalog">
+      <h2 class="catalog-heading">Or start from one of Tucker's photos</h2>
+      <div class="catalog-groups" data-catalog-groups></div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>Curated photos from <a href="https://www.tuckermills.com" target="_blank" rel="noopener">tuckermills.com</a>. Your own uploads never leave your browser.</p>
+  </footer>
+
+  <script src="photo-catalog.js"></script>
+  <script src="fractalize-core/fractalize-core.js?v=76b422d"></script>
+  <script src="app.js"></script>
+</body>
+</html>

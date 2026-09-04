@@ -1,0 +1,50 @@
+name: Deploy to GitHub Pages
+
+# GitHub Pages' classic "deploy from a branch" mode does NOT check out
+# git submodules -- fractalize-core (see .gitmodules) would silently be
+# an empty directory on the live site. This workflow checks the repo out
+# with submodules initialized, then publishes exactly that as the Pages
+# artifact -- no build step, just making sure the submodule's files are
+# actually present before the site is served.
+#
+# One-time manual step this workflow depends on: repo Settings -> Pages
+# -> Build and deployment -> Source must be set to "GitHub Actions" for
+# the deploy step below to work.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (with submodules)
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload site as Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: "."
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

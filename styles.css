@@ -1,0 +1,259 @@
+/* Fractalize Studio -- a standalone product, so its own look rather than
+   a copy of tuckermills.com's. Kept close to the fractal engine's own
+   dark-glass aesthetic (rgba(255,255,255,0.1) panels, translucent white
+   borders) since that IS the product here -- the page around it should
+   read as the same family, not a different app that happens to link to
+   it. No webfont, matching this project's existing convention of relying
+   on the OS/browser's own system-ui stack. */
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: #0a0c0e;
+  color: #fff;
+}
+
+body {
+  font-family: system-ui, sans-serif;
+  line-height: 1.5;
+  padding: 0 20px;
+}
+
+a {
+  color: #fff;
+}
+
+.hero {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 96px 0 48px;
+  text-align: center;
+}
+
+.hero-title {
+  margin: 0 0 12px;
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, #fff, #9ad1ff 60%, #ff9ad1);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.hero-tagline {
+  margin: 0;
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+main {
+  max-width: 960px;
+  margin: 0 auto 80px;
+}
+
+/* --- Upload card ---------------------------------------------------- */
+
+.upload-card {
+  margin-bottom: 64px;
+}
+
+.upload-dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 48px 24px;
+  border: 2px dashed rgba(255, 255, 255, 0.25);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.03);
+  cursor: pointer;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.upload-dropzone:hover,
+.upload-dropzone.is-dragover {
+  border-color: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.upload-icon {
+  opacity: 0.8;
+}
+
+.upload-text {
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.upload-preview-row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-top: 20px;
+  padding: 16px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Author-level `display: flex` above otherwise beats the browser's own
+   default `[hidden] { display: none }` UA rule at equal specificity --
+   re-assert it explicitly rather than relying on the attribute alone. */
+.upload-preview-row[hidden] {
+  display: none;
+}
+
+.upload-preview {
+  width: 72px;
+  height: 72px;
+  object-fit: cover;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.upload-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.action-btn {
+  appearance: none;
+  -webkit-appearance: none;
+  border: 1px solid #fff;
+  border-radius: 999px;
+  background: #fff;
+  color: #111;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 10px 18px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.action-btn:hover {
+  background: rgba(255, 255, 255, 0.85);
+}
+
+.action-btn:active {
+  transform: scale(0.97);
+}
+
+.action-btn-secondary {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.action-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* --- Curated catalog -------------------------------------------------- */
+
+.catalog-heading {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
+  margin: 0 0 24px;
+}
+
+.catalog-group {
+  margin-bottom: 32px;
+}
+
+.catalog-group-label {
+  margin: 0 0 12px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.catalog-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 12px;
+}
+
+.catalog-thumb {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 12px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.catalog-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.catalog-thumb-actions {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: rgba(0, 0, 0, 0.45);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.catalog-thumb:hover .catalog-thumb-actions,
+.catalog-thumb:focus-within .catalog-thumb-actions {
+  opacity: 1;
+}
+
+.thumb-action {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.thumb-action:hover {
+  background: #fff;
+  transform: scale(1.06);
+}
+
+/* --- Footer ----------------------------------------------------------- */
+
+.site-footer {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 24px 0 64px;
+  text-align: center;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+@media (max-width: 600px) {
+  .hero {
+    padding: 64px 0 32px;
+  }
+
+  .upload-preview-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
