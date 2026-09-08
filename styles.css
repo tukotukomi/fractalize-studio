@@ -51,6 +51,21 @@ a {
   margin: 0 auto;
 }
 
+/* An autoplaying, muted, looping video rather than an actual .gif --
+   the source gif played forward-then-reverse (a "boomerang") encoded as
+   a real animated GIF came out to 13MB; the identical-looking loop as
+   H.264/VP9 video is under 1MB with no palette banding. Built by
+   reversing the source clip and concatenating it after itself (ffmpeg
+   -filter_complex "split, reverse one half, concat"), so it plays
+   through once, plays back in reverse, and repeats via the video's own
+   native loop -- no JS needed. */
+.hero-banner {
+  display: block;
+  width: min(100%, 600px);
+  margin: 0 auto 20px;
+  border-radius: 16px;
+}
+
 .hero-tagline {
   margin: 0;
   font-size: 1.1rem;
