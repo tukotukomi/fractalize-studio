@@ -6,7 +6,7 @@
   <title>Fractalize Studio</title>
   <meta name="description" content="Turn any photo into a living, music-reactive fractal -- right in your browser.">
   <link rel="stylesheet" href="styles.css">
-  <link rel="stylesheet" href="fractalize-core/fractalize-core.css">
+  <link rel="stylesheet" href="fractalize-core/fractalize-core.css?v=db74fc4">
 </head>
 <body>
   <!-- Appears once .hero-logo scrolls out of view (see app.js's
@@ -35,9 +35,14 @@
           <label><input type="checkbox" data-toggle="liveAudio"> Live audio input</label>
         </div>
         <div class="fractal-controls-row fractal-controls-audio-device" hidden>
-          <label>Input device</label>
-          <select class="fractal-controls-select" data-audio-device></select>
-          <p class="fractal-controls-audio-status" data-audio-status></p>
+          <div class="fractal-audio-device-col">
+            <label>Input device</label>
+            <select class="fractal-controls-select" data-audio-device></select>
+            <p class="fractal-controls-audio-status" data-audio-status></p>
+          </div>
+          <div class="fractal-audio-meter-col">
+            <canvas class="fractal-audio-waveform" data-audio-waveform width="200" height="48"></canvas>
+          </div>
         </div>
       </div>
     </section>
@@ -70,7 +75,7 @@
   </footer>
 
   <script src="photo-catalog.js"></script>
-  <script src="fractalize-core/fractalize-core.js?v=0650dad"></script>
+  <script src="fractalize-core/fractalize-core.js?v=db74fc4"></script>
   <script src="app.js"></script>
 </body>
 </html>
