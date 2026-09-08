@@ -106,6 +106,90 @@
   const liveAudioPanel = document.querySelector(".live-audio-help [data-live-audio-panel]");
   if (liveAudioPanel) window.FractalizeCore.wireLiveAudioControls(liveAudioPanel);
 
+  // --- "Start fractalizing" modal -----------------------------------
+  // A second, streamlined entry point (see index.html) -- resolve live
+  // audio first, then launch straight into a fractal on a random
+  // curated photo, rather than browsing to one. Deliberately duplicates
+  // the live-audio-help card above rather than replacing it: a test of
+  // a more guided path, not a redesign of the existing one. Its own
+  // panel is wired via the exact same wireLiveAudioControls the card
+  // above uses (same shared microphone stream), and syncLiveAudioPanel
+  // on open reflects an already-granted stream from THAT card
+  // immediately, rather than only after this one's own button is
+  // clicked.
+  const startBtn = document.querySelector("[data-start-fractalizing]");
+  const startModal = document.querySelector("[data-start-modal]");
+  if (startBtn && startModal) {
+    const startModalClose = document.querySelector("[data-start-modal-close]");
+    const startModalLiveAudioBtn = document.querySelector("[data-start-modal-live-audio-btn]");
+    const startModalSkipBtn = document.querySelector("[data-start-modal-skip]");
+    const startModalCheckbox = startModal.querySelector('[data-toggle="liveAudio"]');
+    const startModalPanel = startModal.querySelector("[data-live-audio-panel]");
+
+    window.FractalizeCore.wireLiveAudioControls(startModalPanel);
+
+    // liveaudiostatechange fires whenever this panel's own live-audio
+    // state becomes definitively known -- true once enable actually
+    // succeeds, false on denial/disconnect/explicit uncheck/any other
+    // panel's own stop (see fractalize-core.js). Drives the button's
+    // two-stage label/behavior: "Use Live Audio Input" (not yet
+    // active, clicking requests it) vs "Start Live Audio Input"
+    // (already active, clicking proceeds).
+    let liveAudioActive = false;
+    startModalPanel.addEventListener("liveaudiostatechange", (e) => {
+      liveAudioActive = e.detail.active;
+      startModalLiveAudioBtn.textContent = liveAudioActive ? "Start Live Audio Input" : "Use Live Audio Input";
+    });
+
+    function launchRandomFractal() {
+      const pool = [];
+      (window.FRACTALIZE_CATALOG || []).forEach((group) => {
+        group.photos.forEach((photo) => pool.push(photo));
+      });
+      if (!pool.length) return;
+      // Picking a specific photo (vs. just landing on the page's own
+      // upload/catalog section) is a placeholder for this first pass --
+      // an explicit "pick one" step may replace this later.
+      const photo = pool[Math.floor(Math.random() * pool.length)];
+      window.FractalizeCore.openFractal(photo.src);
+    }
+
+    function openStartModal() {
+      startModal.hidden = false;
+      window.FractalizeCore.syncLiveAudioPanel(startModalPanel);
+    }
+    function closeStartModal() {
+      startModal.hidden = true;
+    }
+
+    startBtn.addEventListener("click", openStartModal);
+    startModalClose.addEventListener("click", closeStartModal);
+    startModal.addEventListener("click", (e) => {
+      if (e.target === startModal) closeStartModal();
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && !startModal.hidden) closeStartModal();
+    });
+
+    startModalLiveAudioBtn.addEventListener("click", () => {
+      if (liveAudioActive) {
+        closeStartModal();
+        launchRandomFractal();
+        return;
+      }
+      // Drives the same hidden checkbox wireLiveAudioControls is
+      // listening on above -- if the visitor still needs to grant
+      // permission, this is what triggers that browser dialog.
+      startModalCheckbox.checked = true;
+      startModalCheckbox.dispatchEvent(new Event("change", { bubbles: true }));
+    });
+
+    startModalSkipBtn.addEventListener("click", () => {
+      closeStartModal();
+      launchRandomFractal();
+    });
+  }
+
   // --- Curated photo grid -------------------------------------------
   const groupsEl = document.querySelector("[data-catalog-groups]");
   const FRACTAL_ICON =
