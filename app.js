@@ -31,6 +31,25 @@
     bgVideo.addEventListener("loadedmetadata", updateBgVideoFrame);
     window.addEventListener("scroll", scheduleBgScrub, { passive: true });
     window.addEventListener("resize", scheduleBgScrub);
+
+    // iOS Safari (and, since Apple requires every iOS browser to use
+    // WebKit under the hood, every other iOS browser too) is
+    // conservative about ever decoding video that hasn't actually
+    // played -- currentTime writes above are silently ignored there
+    // until the decode pipeline's been kicked by a real play() call,
+    // even with preload="auto" already set and the file fully
+    // downloaded. A muted, inline video is allowed to play without a
+    // user gesture, so play() immediately followed by pause() once
+    // playback actually starts primes that pipeline invisibly -- it's
+    // paused again within a frame or two, before a viewer would ever
+    // see it move on its own, but WebKit now treats it as seekable.
+    bgVideo.play().then(() => bgVideo.pause()).catch(() => {
+      // Autoplay blocked outright (rare for a muted video, but possible
+      // in some restricted/embedded context) -- scroll-scrub still
+      // works via the currentTime writes above once metadata loads
+      // regardless; this priming step is purely a best-effort assist
+      // for WebKit specifically.
+    });
   }
 
   // --- Sticky nav ------------------------------------------------------

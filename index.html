@@ -9,15 +9,18 @@
   <link rel="stylesheet" href="fractalize-core/fractalize-core.css?v=470dbfe">
 </head>
 <body>
-  <!-- Fixed full-viewport background -- NOT autoplaying. Its currentTime
-       is driven directly by scroll position instead (see app.js), so the
-       fractal advances and rewinds through frames as the page scrolls
-       up/down rather than animating on its own. preload="auto" so the
-       whole (short, all-keyframe -- see the source's own encoding notes)
-       clip is available to scrub through immediately rather than only
-       whatever's buffered so far. The 80%-black layer above it keeps
-       page text readable against what's still a busy, high-contrast
-       image underneath. -->
+  <!-- Fixed full-viewport background -- doesn't animate on its own. Its
+       currentTime is driven directly by scroll position instead (see
+       app.js), so the fractal advances and rewinds through frames as
+       the page scrolls up/down. No autoplay/loop attribute -- app.js
+       does briefly play() + immediately pause() it once on load purely
+       to prime iOS Safari's decoder (see that comment for why), which
+       finishes well before a viewer would ever notice any motion.
+       preload="auto" so the whole (short, all-keyframe -- see the
+       source's own encoding notes) clip is available to scrub through
+       immediately rather than only whatever's buffered so far. The
+       80%-black layer above it keeps page text readable against what's
+       still a busy, high-contrast image underneath. -->
   <!-- MP4/H.264 only, deliberately not paired with a WebM source like
        the other videos on this page -- the equivalent all-keyframe VP9
        encode (needed so every scroll-driven currentTime write below
