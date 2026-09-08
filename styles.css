@@ -163,8 +163,13 @@ main {
 /* --- Curated catalog -------------------------------------------------- */
 
 .catalog-heading {
+  font-family: "Aldrich", sans-serif;
+  /* Aldrich only ships a single (Regular) weight -- a heavier
+     font-weight here would just get synthetically faux-bolded by the
+     browser instead of using a real bold face, which looks uneven
+     against the rest of this display font's geometry. */
+  font-weight: 400;
   font-size: 1.1rem;
-  font-weight: 600;
   color: rgba(255, 255, 255, 0.85);
   margin: 0 0 24px;
 }
@@ -174,9 +179,10 @@ main {
 }
 
 .catalog-group-label {
+  font-family: "Aldrich", sans-serif;
+  font-weight: 400;
   margin: 0 0 12px;
   font-size: 0.78rem;
-  font-weight: 600;
   letter-spacing: 0.03em;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.5);
