@@ -4,6 +4,37 @@
   // shows below -- see window.FRACTALIZE_CATALOG in photo-catalog.js.
   window.FractalizeCore.setPhotoCatalog(window.FRACTALIZE_CATALOG || []);
 
+  // --- Sticky nav ------------------------------------------------------
+  // Shows "FRACTALIZE STUDIO" in a fixed bar once .hero-logo scrolls out
+  // of view, so the page identifies itself again after the full hero
+  // (logo + banner + tagline) has scrolled past. threshold: 0 means
+  // "visible" is anything still touching the viewport at all -- the bar
+  // only appears once the logo is fully gone, not as soon as it starts
+  // to leave.
+  const stickyNav = document.querySelector("[data-sticky-nav]");
+  const heroLogo = document.querySelector(".hero-logo");
+  if (stickyNav && heroLogo && "IntersectionObserver" in window) {
+    const stickyNavObserver = new IntersectionObserver(
+      ([entry]) => {
+        stickyNav.classList.toggle("is-visible", !entry.isIntersecting);
+      },
+      { threshold: 0 }
+    );
+    stickyNavObserver.observe(heroLogo);
+  }
+
+  // --- Live audio setup --------------------------------------------------
+  // Same "Live audio input" checkbox + device picker the fractal/
+  // visualizer settings panels have, but reachable before ever opening
+  // either -- lets a visitor grant mic access and pick their VB-CABLE
+  // (or similar) device once, up front, so whichever view they open
+  // next is already reactive instead of needing the settings panel
+  // mid-experience. wireLiveAudioControls is the exact same function
+  // those panels use internally (see fractalize-core.js), just exposed
+  // for a host page to call directly against its own markup.
+  const liveAudioPanel = document.querySelector(".live-audio-help [data-live-audio-panel]");
+  if (liveAudioPanel) window.FractalizeCore.wireLiveAudioControls(liveAudioPanel);
+
   // --- Curated photo grid -------------------------------------------
   const groupsEl = document.querySelector("[data-catalog-groups]");
   const FRACTAL_ICON =

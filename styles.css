@@ -72,6 +72,66 @@ a {
   color: rgba(255, 255, 255, 0.65);
 }
 
+/* Fixed regardless of body's own side padding (position: fixed sizes
+   against the viewport, not an ancestor's padding box) -- hidden by
+   default and toggled by app.js's IntersectionObserver on .hero-logo,
+   rather than a plain "always sticky" header, since a persistent bar
+   sitting on top of the hero's own logo/banner would be redundant with
+   what's already right there. */
+.sticky-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 20px;
+  background: rgba(10, 12, 14, 0.85);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  opacity: 0;
+  transform: translateY(-100%);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  pointer-events: none;
+}
+
+.sticky-nav.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.sticky-nav-title {
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: #fff;
+}
+
+/* Same full width as .upload-card/.catalog below (a plain child of
+   main, no width override of its own) -- a card treatment (border +
+   faint fill) so two lines of instructions plus a checkbox don't just
+   read as orphaned text before the upload dropzone. */
+.live-audio-help {
+  margin-bottom: 32px;
+  padding: 20px 24px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.live-audio-help-step {
+  margin: 0 0 8px;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.live-audio-help-step:last-of-type {
+  margin-bottom: 18px;
+}
+
 main {
   max-width: 960px;
   margin: 0 auto 80px;

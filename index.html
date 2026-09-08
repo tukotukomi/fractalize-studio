@@ -9,6 +9,14 @@
   <link rel="stylesheet" href="fractalize-core/fractalize-core.css">
 </head>
 <body>
+  <!-- Appears once .hero-logo scrolls out of view (see app.js's
+       IntersectionObserver) -- a compact reminder of what page you're
+       on once the full hero (logo + banner + tagline) has scrolled
+       past. -->
+  <nav class="sticky-nav" data-sticky-nav>
+    <span class="sticky-nav-title">FRACTALIZE STUDIO</span>
+  </nav>
+
   <header class="hero">
     <h1 class="hero-title"><img class="hero-logo" src="logo.png" alt="Fractalize Studio"></h1>
     <video class="hero-banner" autoplay loop muted playsinline>
@@ -19,6 +27,21 @@
   </header>
 
   <main>
+    <section class="live-audio-help">
+      <p class="live-audio-help-step">① Enable live audio input for music-reactive mode.</p>
+      <p class="live-audio-help-step">② Play music over speakers, or use a program like VB-CABLE to route input directly.</p>
+      <div data-live-audio-panel>
+        <div class="fractal-controls-row fractal-controls-toggle-row">
+          <label><input type="checkbox" data-toggle="liveAudio"> Live audio input</label>
+        </div>
+        <div class="fractal-controls-row fractal-controls-audio-device" hidden>
+          <label>Input device</label>
+          <select class="fractal-controls-select" data-audio-device></select>
+          <p class="fractal-controls-audio-status" data-audio-status></p>
+        </div>
+      </div>
+    </section>
+
     <section class="upload-card">
       <label class="upload-dropzone" for="upload-input" data-upload-dropzone>
         <svg class="upload-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="36px" height="36px" fill="#e3e3e3">
@@ -47,7 +70,7 @@
   </footer>
 
   <script src="photo-catalog.js"></script>
-  <script src="fractalize-core/fractalize-core.js?v=5095f5d"></script>
+  <script src="fractalize-core/fractalize-core.js?v=0650dad"></script>
   <script src="app.js"></script>
 </body>
 </html>
