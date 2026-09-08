@@ -1,8 +1,28 @@
 (function () {
   // Gives the engine's own internal camera-roll panel (reachable once
-  // inside the fractal/visualizer) the same photos this page's own grid
-  // shows below -- see window.FRACTALIZE_CATALOG in photo-catalog.js.
-  window.FractalizeCore.setPhotoCatalog(window.FRACTALIZE_CATALOG || []);
+  // inside the fractal) the same photos this page's own grids show
+  // below -- both the curated catalog (window.FRACTALIZE_CATALOG) AND,
+  // once loaded, this visitor's own persisted uploads (see the
+  // "Persisted uploads" section further down), as a second "Your
+  // Uploads" group, so an uploaded photo can be queued/shuffled from
+  // inside the fractal the exact same way a curated one can. Called
+  // again every time the uploads list changes (new upload, delete) --
+  // setPhotoCatalog itself invalidates the camera roll's own "build
+  // once" grid cache when that happens, so the next time it's opened
+  // reflects the change rather than a stale snapshot from the first
+  // open.
+  let uploadedPhotoRecords = []; // [{id, url}], kept in sync with IndexedDB below
+  function rebuildFullCatalog() {
+    const groups = (window.FRACTALIZE_CATALOG || []).slice();
+    if (uploadedPhotoRecords.length) {
+      groups.push({
+        label: "Your Uploads",
+        photos: uploadedPhotoRecords.map((r) => ({ src: r.url, thumbSrc: r.url })),
+      });
+    }
+    window.FractalizeCore.setPhotoCatalog(groups);
+  }
+  rebuildFullCatalog();
 
   // --- Scroll-scrubbed background ---------------------------------------
   // .page-bg-video (see index.html/styles.css) deliberately has no
@@ -236,8 +256,12 @@
         URL.revokeObjectURL(url);
         thumb.remove();
         if (!uploadsRow.children.length) uploadsSection.hidden = true;
+        const idx = uploadedPhotoRecords.findIndex((r) => r.id === record.id);
+        if (idx !== -1) uploadedPhotoRecords.splice(idx, 1);
+        rebuildFullCatalog();
       });
     });
+    uploadedPhotoRecords.push({ id: record.id, url: url });
     return thumb;
   }
 
@@ -247,6 +271,7 @@
         if (!records.length) return;
         records.forEach((record) => uploadsRow.appendChild(renderUploadThumb(record)));
         uploadsSection.hidden = false;
+        rebuildFullCatalog();
       })
       .catch(() => {
         // IndexedDB unavailable/blocked -- new uploads below still work
@@ -277,6 +302,7 @@
         .then((record) => {
           uploadsRow.insertBefore(renderUploadThumb(record), uploadsRow.firstChild);
           uploadsSection.hidden = false;
+          rebuildFullCatalog();
         })
         .catch(() => {
           // Storage unavailable or quota exceeded -- this upload still
