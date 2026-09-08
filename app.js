@@ -4,6 +4,35 @@
   // shows below -- see window.FRACTALIZE_CATALOG in photo-catalog.js.
   window.FractalizeCore.setPhotoCatalog(window.FRACTALIZE_CATALOG || []);
 
+  // --- Scroll-scrubbed background ---------------------------------------
+  // .page-bg-video (see index.html/styles.css) deliberately has no
+  // autoplay -- its currentTime is driven directly by scroll position
+  // instead, so the fractal advances through frames as the page scrolls
+  // down and rewinds as it scrolls back up, rather than animating on its
+  // own. rAF-throttled since "scroll" fires far more often than a video
+  // frame actually needs picking, and the source is encoded with every
+  // frame as a keyframe specifically so each of these currentTime writes
+  // seeks instantly instead of visibly stepping back to the nearest one.
+  const bgVideo = document.querySelector("[data-page-bg-video]");
+  if (bgVideo) {
+    let bgScrubScheduled = false;
+    function updateBgVideoFrame() {
+      bgScrubScheduled = false;
+      if (!bgVideo.duration) return;
+      const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = scrollable > 0 ? Math.min(1, Math.max(0, window.scrollY / scrollable)) : 0;
+      bgVideo.currentTime = progress * bgVideo.duration;
+    }
+    function scheduleBgScrub() {
+      if (bgScrubScheduled) return;
+      bgScrubScheduled = true;
+      requestAnimationFrame(updateBgVideoFrame);
+    }
+    bgVideo.addEventListener("loadedmetadata", updateBgVideoFrame);
+    window.addEventListener("scroll", scheduleBgScrub, { passive: true });
+    window.addEventListener("resize", scheduleBgScrub);
+  }
+
   // --- Sticky nav ------------------------------------------------------
   // Shows "FRACTALIZE STUDIO" in a fixed bar once .hero-logo scrolls out
   // of view, so the page identifies itself again after the full hero

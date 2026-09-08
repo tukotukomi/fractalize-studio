@@ -10,11 +10,23 @@
   box-sizing: border-box;
 }
 
+html {
+  background: #0a0c0e;
+}
+
+/* No background-color of its OWN -- html's background above already
+   covers the canvas as a fallback, and .page-bg-video/.page-bg-overlay
+   (fixed, negative z-index, see below) need body to stay transparent:
+   since html already declares a background explicitly, the HTML5
+   canvas-background-propagation rule doesn't kick in, so a background
+   set here would paint as an ordinary in-flow element background --
+   which paints AFTER (on top of, hiding) any negative-z-index child of
+   body, defeating the whole point of putting the scroll-scrubbed
+   background behind everything else. */
 html,
 body {
   margin: 0;
   padding: 0;
-  background: #0a0c0e;
   color: #fff;
 }
 
@@ -26,6 +38,31 @@ body {
 
 a {
   color: #fff;
+}
+
+/* Scroll-scrubbed background (see app.js) -- fixed to the viewport so
+   it stays put while the page itself scrolls over it, sitting at a
+   negative z-index so it paints behind ordinary in-flow page content
+   without needing to coordinate with any other z-index in this file
+   (the sticky nav's 500, the fractal engine's own 3100 -- both still
+   correctly land on top of a negative-z-index element regardless). */
+.page-bg-video {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Keeps page text readable over what's still a busy, high-contrast
+   background image -- sits directly above the video, still behind
+   every normal page element. */
+.page-bg-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: rgba(0, 0, 0, 0.8);
 }
 
 .hero {

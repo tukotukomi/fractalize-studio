@@ -9,6 +9,26 @@
   <link rel="stylesheet" href="fractalize-core/fractalize-core.css?v=470dbfe">
 </head>
 <body>
+  <!-- Fixed full-viewport background -- NOT autoplaying. Its currentTime
+       is driven directly by scroll position instead (see app.js), so the
+       fractal advances and rewinds through frames as the page scrolls
+       up/down rather than animating on its own. preload="auto" so the
+       whole (short, all-keyframe -- see the source's own encoding notes)
+       clip is available to scrub through immediately rather than only
+       whatever's buffered so far. The 80%-black layer above it keeps
+       page text readable against what's still a busy, high-contrast
+       image underneath. -->
+  <!-- MP4/H.264 only, deliberately not paired with a WebM source like
+       the other videos on this page -- the equivalent all-keyframe VP9
+       encode (needed so every scroll-driven currentTime write below
+       seeks instantly, not just this video's own autoplay/loop case)
+       produced a file that Chrome silently refuses to seek in at all
+       (currentTime writes are accepted but never take effect). H.264
+       MP4 has no such issue and is natively supported everywhere this
+       matters anyway, so there's no real fallback need here. -->
+  <video class="page-bg-video" data-page-bg-video src="bg-fractal.mp4" muted playsinline preload="auto"></video>
+  <div class="page-bg-overlay"></div>
+
   <!-- Appears once .hero-logo scrolls out of view (see app.js's
        IntersectionObserver) -- a compact reminder of what page you're
        on once the full hero (logo + banner + tagline) has scrolled
