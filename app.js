@@ -15,7 +15,10 @@
   function rebuildFullCatalog() {
     const groups = (window.FRACTALIZE_CATALOG || []).slice();
     if (uploadedPhotoRecords.length) {
-      groups.push({
+      // Unshifted, not pushed -- mirrors this page's own layout, where
+      // "Your Uploads" sits above the curated "Tuko's Photography"
+      // catalog (see index.html), not below it.
+      groups.unshift({
         label: "Your Uploads",
         photos: uploadedPhotoRecords.map((r) => ({ src: r.url, thumbSrc: r.url })),
       });
