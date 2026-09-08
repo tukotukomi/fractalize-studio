@@ -125,6 +125,135 @@
     groupsEl.appendChild(section);
   });
 
+  // --- Persisted uploads (IndexedDB) -------------------------------------
+  // An uploaded photo is otherwise session-only: its blob: URL (see the
+  // upload flow below) dies the moment this page closes, which is why
+  // opening one passes persistQueue:false -- the engine's own queue only
+  // ever stores src strings, and a dead blob: URL in it would fail to
+  // load on a future visit. Storing the actual File here instead (never
+  // the blob: URL itself, which can't survive a reload either way) lets
+  // a visitor's own uploads survive across visits on THIS device --
+  // nothing leaves the browser, still true to the footer's own claim,
+  // just no longer only for the current tab's lifetime. Best-effort, not
+  // durable: browsers can evict this under storage pressure or after a
+  // period of disuse, and clearing site data wipes it outright --
+  // acceptable for a free, no-backend solution, not a promise of
+  // permanence, and every call below degrades to "this upload just
+  // works for the current session, same as before" if IndexedDB is
+  // unavailable or blocked.
+  const UPLOADS_DB_NAME = "fractalizeStudioUploads";
+  const UPLOADS_STORE = "photos";
+
+  function openUploadsDb() {
+    return new Promise((resolve, reject) => {
+      if (!window.indexedDB) {
+        reject(new Error("IndexedDB unavailable"));
+        return;
+      }
+      const req = indexedDB.open(UPLOADS_DB_NAME, 1);
+      req.onupgradeneeded = () => {
+        req.result.createObjectStore(UPLOADS_STORE, { keyPath: "id" });
+      };
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    });
+  }
+
+  function saveUploadedPhoto(file) {
+    return openUploadsDb().then(
+      (db) =>
+        new Promise((resolve, reject) => {
+          const record = {
+            id: Date.now() + "-" + Math.random().toString(36).slice(2),
+            blob: file,
+            name: file.name,
+            addedAt: Date.now(),
+          };
+          const tx = db.transaction(UPLOADS_STORE, "readwrite");
+          tx.objectStore(UPLOADS_STORE).add(record);
+          tx.oncomplete = () => resolve(record);
+          tx.onerror = () => reject(tx.error);
+        })
+    );
+  }
+
+  function getAllUploadedPhotos() {
+    return openUploadsDb().then(
+      (db) =>
+        new Promise((resolve, reject) => {
+          const req = db.transaction(UPLOADS_STORE, "readonly").objectStore(UPLOADS_STORE).getAll();
+          req.onsuccess = () => resolve(req.result.sort((a, b) => b.addedAt - a.addedAt));
+          req.onerror = () => reject(req.error);
+        })
+    );
+  }
+
+  function deleteUploadedPhoto(id) {
+    return openUploadsDb().then(
+      (db) =>
+        new Promise((resolve, reject) => {
+          const tx = db.transaction(UPLOADS_STORE, "readwrite");
+          tx.objectStore(UPLOADS_STORE).delete(id);
+          tx.oncomplete = () => resolve();
+          tx.onerror = () => reject(tx.error);
+        })
+    );
+  }
+
+  const uploadsSection = document.querySelector("[data-uploads-catalog]");
+  const uploadsRow = document.querySelector("[data-uploads-row]");
+  const DELETE_ICON =
+    '<svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="16px" fill="#111"><path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360Z"/></svg>';
+
+  // A record's own blob: URL is created once here and reused for both
+  // this thumbnail's <img> and whatever Fractal/Visualize opens -- no
+  // reason to mint a second one for the same File.
+  function renderUploadThumb(record) {
+    const url = URL.createObjectURL(record.blob);
+    const thumb = document.createElement("div");
+    thumb.className = "catalog-thumb";
+    thumb.innerHTML =
+      '<img src="' + url + '" alt="" loading="lazy" decoding="async" width="200" height="200">' +
+      '<div class="catalog-thumb-actions">' +
+      '<button type="button" class="thumb-action" data-action="fractal" aria-label="Open as fractal">' +
+      FRACTAL_ICON +
+      "</button>" +
+      '<button type="button" class="thumb-action" data-action="visualize" aria-label="Visualize to music">' +
+      VISUALIZE_ICON +
+      "</button>" +
+      '<button type="button" class="thumb-action" data-action="delete" aria-label="Delete this upload">' +
+      DELETE_ICON +
+      "</button>" +
+      "</div>";
+    thumb.querySelector('[data-action="fractal"]').addEventListener("click", () => {
+      window.FractalizeCore.openFractal(url, { persistQueue: false });
+    });
+    thumb.querySelector('[data-action="visualize"]').addEventListener("click", () => {
+      window.FractalizeCore.openVisualizer(url);
+    });
+    thumb.querySelector('[data-action="delete"]').addEventListener("click", () => {
+      deleteUploadedPhoto(record.id).then(() => {
+        URL.revokeObjectURL(url);
+        thumb.remove();
+        if (!uploadsRow.children.length) uploadsSection.hidden = true;
+      });
+    });
+    return thumb;
+  }
+
+  if (uploadsSection && uploadsRow) {
+    getAllUploadedPhotos()
+      .then((records) => {
+        if (!records.length) return;
+        records.forEach((record) => uploadsRow.appendChild(renderUploadThumb(record)));
+        uploadsSection.hidden = false;
+      })
+      .catch(() => {
+        // IndexedDB unavailable/blocked -- new uploads below still work
+        // for the current session, just without persistence.
+      });
+  }
+
   // --- Upload flow -----------------------------------------------------
   // A blob: URL only lives as long as this page does, so it's opened
   // with persistQueue:false (see fractalize-core's own README) --
@@ -142,6 +271,19 @@
     uploadedUrl = URL.createObjectURL(file);
     previewImg.src = uploadedUrl;
     actionsRow.hidden = false;
+
+    if (uploadsSection && uploadsRow) {
+      saveUploadedPhoto(file)
+        .then((record) => {
+          uploadsRow.insertBefore(renderUploadThumb(record), uploadsRow.firstChild);
+          uploadsSection.hidden = false;
+        })
+        .catch(() => {
+          // Storage unavailable or quota exceeded -- this upload still
+          // works for the current session via the preview above, it
+          // just won't be there on a future visit.
+        });
+    }
   }
 
   fileInput.addEventListener("change", () => handleFile(fileInput.files[0]));

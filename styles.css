@@ -272,6 +272,16 @@ main {
   background: rgba(255, 255, 255, 0.2);
 }
 
+/* --- Your uploads ------------------------------------------------------- */
+/* Reuses .catalog-heading/.catalog-row/.catalog-thumb/.thumb-action below
+   verbatim (a grid of thumbnails is a grid of thumbnails, whether the
+   src is a curated URL or a blob: URL from IndexedDB) -- only its own
+   bottom margin needed, matching .upload-card's, to keep the same
+   rhythm of spacing before the curated catalog starts. */
+.uploads-catalog {
+  margin-bottom: 64px;
+}
+
 /* --- Curated catalog -------------------------------------------------- */
 
 .catalog-heading {

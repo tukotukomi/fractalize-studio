@@ -87,6 +87,14 @@
       </div>
     </section>
 
+    <!-- Populated from IndexedDB (see app.js) -- uploaded photos saved
+         on a previous visit, on this device/browser only. Hidden until
+         there's at least one to show. -->
+    <section class="uploads-catalog" data-uploads-catalog hidden>
+      <h2 class="catalog-heading">Your Uploads</h2>
+      <div class="catalog-row" data-uploads-row></div>
+    </section>
+
     <section class="catalog">
       <h2 class="catalog-heading">Tuko's Photography</h2>
       <div class="catalog-groups" data-catalog-groups></div>
