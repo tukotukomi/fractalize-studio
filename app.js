@@ -106,27 +106,28 @@
   const liveAudioPanel = document.querySelector(".live-audio-help [data-live-audio-panel]");
   if (liveAudioPanel) window.FractalizeCore.wireLiveAudioControls(liveAudioPanel);
 
-  // --- "Start fractalizing" modal -----------------------------------
+  // --- "Start fractalizing" panel -------------------------------------
   // A second, streamlined entry point (see index.html) -- resolve live
   // audio first, then launch straight into a fractal on a random
   // curated photo, rather than browsing to one. Deliberately duplicates
-  // the live-audio-help card above rather than replacing it: a test of
+  // the live-audio-help card below rather than replacing it: a test of
   // a more guided path, not a redesign of the existing one. Its own
   // panel is wired via the exact same wireLiveAudioControls the card
-  // above uses (same shared microphone stream), and syncLiveAudioPanel
+  // below uses (same shared microphone stream), and syncLiveAudioPanel
   // on open reflects an already-granted stream from THAT card
   // immediately, rather than only after this one's own button is
-  // clicked.
+  // clicked. Inline disclosure, not a popup -- .hero-cta just toggles
+  // it open/closed in place.
   const startBtn = document.querySelector("[data-start-fractalizing]");
-  const startModal = document.querySelector("[data-start-modal]");
-  if (startBtn && startModal) {
-    const startModalClose = document.querySelector("[data-start-modal-close]");
-    const startModalLiveAudioBtn = document.querySelector("[data-start-modal-live-audio-btn]");
-    const startModalSkipBtn = document.querySelector("[data-start-modal-skip]");
-    const startModalCheckbox = startModal.querySelector('[data-toggle="liveAudio"]');
-    const startModalPanel = startModal.querySelector("[data-live-audio-panel]");
+  const startPanel = document.querySelector("[data-start-panel]");
+  if (startBtn && startPanel) {
+    const startPanelClose = document.querySelector("[data-start-panel-close]");
+    const startPanelLiveAudioBtn = document.querySelector("[data-start-panel-live-audio-btn]");
+    const startPanelSkipBtn = document.querySelector("[data-start-panel-skip]");
+    const startPanelCheckbox = startPanel.querySelector('[data-toggle="liveAudio"]');
+    const startPanelLiveAudioPanel = startPanel.querySelector("[data-live-audio-panel]");
 
-    window.FractalizeCore.wireLiveAudioControls(startModalPanel);
+    window.FractalizeCore.wireLiveAudioControls(startPanelLiveAudioPanel);
 
     // liveaudiostatechange fires whenever this panel's own live-audio
     // state becomes definitively known -- true once enable actually
@@ -136,9 +137,9 @@
     // active, clicking requests it) vs "Start Live Audio Input"
     // (already active, clicking proceeds).
     let liveAudioActive = false;
-    startModalPanel.addEventListener("liveaudiostatechange", (e) => {
+    startPanelLiveAudioPanel.addEventListener("liveaudiostatechange", (e) => {
       liveAudioActive = e.detail.active;
-      startModalLiveAudioBtn.textContent = liveAudioActive ? "Start Live Audio Input" : "Use Live Audio Input";
+      startPanelLiveAudioBtn.textContent = liveAudioActive ? "Start Live Audio Input" : "Use Live Audio Input";
     });
 
     function launchRandomFractal() {
@@ -154,38 +155,38 @@
       window.FractalizeCore.openFractal(photo.src);
     }
 
-    function openStartModal() {
-      startModal.hidden = false;
-      window.FractalizeCore.syncLiveAudioPanel(startModalPanel);
+    function openStartPanel() {
+      startPanel.hidden = false;
+      startBtn.setAttribute("aria-expanded", "true");
+      window.FractalizeCore.syncLiveAudioPanel(startPanelLiveAudioPanel);
+      startPanel.scrollIntoView({ behavior: "smooth", block: "start" });
     }
-    function closeStartModal() {
-      startModal.hidden = true;
+    function closeStartPanel() {
+      startPanel.hidden = true;
+      startBtn.setAttribute("aria-expanded", "false");
     }
 
-    startBtn.addEventListener("click", openStartModal);
-    startModalClose.addEventListener("click", closeStartModal);
-    startModal.addEventListener("click", (e) => {
-      if (e.target === startModal) closeStartModal();
+    startBtn.addEventListener("click", () => {
+      if (startPanel.hidden) openStartPanel();
+      else closeStartPanel();
     });
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape" && !startModal.hidden) closeStartModal();
-    });
+    startPanelClose.addEventListener("click", closeStartPanel);
 
-    startModalLiveAudioBtn.addEventListener("click", () => {
+    startPanelLiveAudioBtn.addEventListener("click", () => {
       if (liveAudioActive) {
-        closeStartModal();
+        closeStartPanel();
         launchRandomFractal();
         return;
       }
       // Drives the same hidden checkbox wireLiveAudioControls is
       // listening on above -- if the visitor still needs to grant
       // permission, this is what triggers that browser dialog.
-      startModalCheckbox.checked = true;
-      startModalCheckbox.dispatchEvent(new Event("change", { bubbles: true }));
+      startPanelCheckbox.checked = true;
+      startPanelCheckbox.dispatchEvent(new Event("change", { bubbles: true }));
     });
 
-    startModalSkipBtn.addEventListener("click", () => {
-      closeStartModal();
+    startPanelSkipBtn.addEventListener("click", () => {
+      closeStartPanel();
       launchRandomFractal();
     });
   }

@@ -389,43 +389,24 @@ main {
   background: #fff;
 }
 
-/* --- "Start fractalizing" modal ---------------------------------------- */
-/* Above the sticky nav's 500 (this is a deliberate, focused interruption,
-   the nav shouldn't float over it) and comfortably below the fractal
-   engine's own 3100 -- the two are never open at the same time in
-   practice (this modal closes itself the moment a fractal opens), but
-   there's no reason to risk it. */
-.start-modal-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  background: rgba(0, 0, 0, 0.7);
-}
-
-/* display:flex above otherwise beats the browser's own default
-   [hidden]{display:none} UA rule at equal specificity -- re-assert it
-   explicitly (same fix already needed for .upload-preview-row above). */
-.start-modal-overlay[hidden] {
-  display: none;
-}
-
-.start-modal {
+/* --- "Start fractalizing" panel ----------------------------------------- */
+/* An inline disclosure, not a popup -- toggled open by .hero-cta, sits
+   between it and .live-audio-help in the page's own flow (see
+   index.html), styled as the same dark-glass card the earlier modal
+   version used. No position/z-index needed: it's a normal block in
+   the document, not layered above anything. */
+.start-panel {
   position: relative;
   width: 100%;
   max-width: 420px;
-  max-height: 85vh;
-  overflow-y: auto;
+  margin: 24px auto 0;
   padding: 40px 24px 24px;
   border-radius: 20px;
   background: rgba(20, 20, 20, 0.95);
   border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
-.start-modal-close {
+.start-panel-close {
   position: absolute;
   top: 12px;
   right: 12px;
@@ -446,18 +427,18 @@ main {
   transition: background-color 0.2s ease;
 }
 
-.start-modal-close:hover {
+.start-panel-close:hover {
   background: rgba(255, 255, 255, 0.2);
 }
 
-.start-modal-live-audio-btn,
-.start-modal-skip-btn {
+.start-panel-live-audio-btn,
+.start-panel-skip-btn {
   display: block;
   width: 100%;
   text-align: center;
 }
 
-.start-modal-live-audio-btn {
+.start-panel-live-audio-btn {
   margin-bottom: 16px;
 }
 
@@ -465,15 +446,15 @@ main {
    using .live-audio-help-step's own trailing margin (meant for a
    checkbox row directly after, not another full-width button several
    elements later). */
-.start-modal .live-audio-help-step {
+.start-panel .live-audio-help-step {
   margin: 0 0 8px;
 }
 
-.start-modal .live-audio-help-step:last-of-type {
+.start-panel .live-audio-help-step:last-of-type {
   margin-bottom: 20px;
 }
 
-.start-modal-skip-btn {
+.start-panel-skip-btn {
   margin-top: 20px;
 }
 

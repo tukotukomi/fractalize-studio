@@ -50,13 +50,43 @@
     <!-- A second, streamlined entry point alongside the existing
          upload/catalog flow further down -- deliberately duplicates
          that flow's own live-audio setup rather than replacing it (see
-         the "Start" modal below), a test of a more guided path: resolve
-         live audio FIRST, then land straight in a fractal, instead of
-         browsing straight to a photo. -->
-    <button type="button" class="hero-cta" data-start-fractalizing>START FRACTALIZING</button>
+         the .start-panel section, first thing in <main>, below), a test
+         of a more guided path: resolve live audio FIRST, then land
+         straight in a fractal, instead of browsing straight to a photo. -->
+    <button type="button" class="hero-cta" data-start-fractalizing aria-expanded="false" aria-controls="start-panel">START FRACTALIZING</button>
   </header>
 
   <main>
+    <!-- Toggled open by .hero-cta above -- an inline disclosure panel
+         (not a popup) so it reads as part of the page's own flow. Its
+         own live-audio panel is wired via the exact same
+         window.FractalizeCore.wireLiveAudioControls the .live-audio-help
+         card below uses, so granting access here and there stay in sync
+         (same shared stream) even though this is a separate control.
+         The checkbox itself stays hidden -- [data-start-panel-live-audio-btn]
+         below is the only thing a visitor actually clicks, and app.js
+         drives the checkbox programmatically from it. -->
+    <section id="start-panel" class="start-panel" data-start-panel hidden aria-label="Start fractalizing">
+      <button type="button" class="start-panel-close" data-start-panel-close aria-label="Close">&times;</button>
+      <button type="button" class="action-btn start-panel-live-audio-btn" data-start-panel-live-audio-btn>Use Live Audio Input</button>
+      <p class="live-audio-help-step">① Enable live audio input for music-reactive mode.</p>
+      <p class="live-audio-help-step">② Play music over speakers, or use a program like VB-CABLE to route input directly.</p>
+      <div data-live-audio-panel>
+        <input type="checkbox" data-toggle="liveAudio" hidden>
+        <div class="fractal-controls-row fractal-controls-audio-device" hidden>
+          <div class="fractal-audio-device-col">
+            <label>Input device</label>
+            <select class="fractal-controls-select" data-audio-device></select>
+            <p class="fractal-controls-audio-status" data-audio-status></p>
+          </div>
+          <div class="fractal-audio-meter-col">
+            <canvas class="fractal-audio-waveform" data-audio-waveform width="200" height="58"></canvas>
+          </div>
+        </div>
+      </div>
+      <button type="button" class="action-btn action-btn-secondary start-panel-skip-btn" data-start-panel-skip>Use Without Live Audio</button>
+    </section>
+
     <section class="live-audio-help">
       <p class="live-audio-help-step">① Enable live audio input for music-reactive mode.</p>
       <p class="live-audio-help-step">② Play music over speakers, or use a program like VB-CABLE to route input directly.</p>
@@ -111,37 +141,6 @@
   <footer class="site-footer">
     <p>Curated photos from <a href="https://www.tuckermills.com" target="_blank" rel="noopener">tuckermills.com</a>. Your own uploads never leave your browser.</p>
   </footer>
-
-  <!-- "START FRACTALIZING" modal (see app.js) -- its own live-audio
-       panel is wired via the exact same window.FractalizeCore.
-       wireLiveAudioControls the .live-audio-help card above uses, so
-       granting access here and there stay in sync (same shared stream)
-       even though this is a separate control. The checkbox itself
-       stays hidden -- [data-start-modal-live-audio-btn] below is the
-       only thing a visitor actually clicks, and app.js drives the
-       checkbox programmatically from it. -->
-  <div class="start-modal-overlay" data-start-modal hidden>
-    <div class="start-modal" role="dialog" aria-modal="true" aria-label="Start fractalizing">
-      <button type="button" class="start-modal-close" data-start-modal-close aria-label="Close">&times;</button>
-      <button type="button" class="action-btn start-modal-live-audio-btn" data-start-modal-live-audio-btn>Use Live Audio Input</button>
-      <p class="live-audio-help-step">① Enable live audio input for music-reactive mode.</p>
-      <p class="live-audio-help-step">② Play music over speakers, or use a program like VB-CABLE to route input directly.</p>
-      <div data-live-audio-panel>
-        <input type="checkbox" data-toggle="liveAudio" hidden>
-        <div class="fractal-controls-row fractal-controls-audio-device" hidden>
-          <div class="fractal-audio-device-col">
-            <label>Input device</label>
-            <select class="fractal-controls-select" data-audio-device></select>
-            <p class="fractal-controls-audio-status" data-audio-status></p>
-          </div>
-          <div class="fractal-audio-meter-col">
-            <canvas class="fractal-audio-waveform" data-audio-waveform width="200" height="58"></canvas>
-          </div>
-        </div>
-      </div>
-      <button type="button" class="action-btn action-btn-secondary start-modal-skip-btn" data-start-modal-skip>Use Without Live Audio</button>
-    </div>
-  </div>
 
   <script src="photo-catalog.js"></script>
   <script src="fractalize-core/fractalize-core.js?v=bde7bb7"></script>
