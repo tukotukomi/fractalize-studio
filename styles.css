@@ -323,6 +323,44 @@ a {
   color: #fff;
 }
 
+/* A second reminder riding along .sticky-nav's own bottom edge (see
+   its own comment in index.html) -- absolutely positioned against
+   .sticky-nav itself (the nearest positioned ancestor) rather than a
+   fixed sibling of its own, so it never needs to know that bar's own
+   height (intrinsic, not a fixed px value) to line up flush against
+   it. translateY(100%) when hidden pushes it down by its own height,
+   just out of view below the nav's own bottom edge -- .is-visible
+   (toggled by app.js) pulls it back up to its natural resting spot at
+   bottom:0, the same slide motion .sticky-nav itself uses for its own
+   show/hide. */
+.sticky-audio-banner {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 24px;
+  background: #eee8ae;
+  opacity: 0;
+  transform: translateY(100%);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.sticky-audio-banner.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.sticky-audio-banner .fractal-audio-waveform {
+  display: block;
+  width: 100%;
+  height: 100%;
+  /* Same black-on-positive-state look the confirm button's own
+     waveform uses -- see its own comment below. */
+  filter: invert(1);
+}
+
 /* Used inside .start-panel only now (see below) -- an earlier
    always-visible checkbox card of its own, styled with this same
    class, was removed once .start-panel covered the same ground in a
@@ -527,9 +565,11 @@ main {
    just because it reads well here too, not because this is layered
    above anything (no position/z-index needed either). */
 .start-panel {
-  /* Top cut 80% (was 24px) -- less gap between ➀'s own text and the
-     panel itself. */
-  margin: 4.8px 0 32px;
+  /* Set to a flat 16px (was 4.8px) -- matches [data-live-audio-confirm]'s
+     own top margin below, so the gap from ➀ down to whichever of the
+     two (panel, then later that button) is actually showing stays the
+     same regardless of which stage of the flow it is. */
+  margin: 16px 0 32px;
   padding: 20px 24px;
   border-radius: 16px;
   background: rgba(255, 255, 255, 0.03);
@@ -621,7 +661,11 @@ main {
   position: relative;
   overflow: hidden;
   width: 100%;
-  margin: 0.32px 0;
+  /* Set to a flat 16px (was 0.32px) on both sides -- matches
+     .start-panel's own top margin above (this button takes that
+     panel's place once PICK YOUR IMAGE is clicked) and gives ➁'s own
+     line below the same 16px breathing room. */
+  margin: 16px 0;
 }
 
 /* Same "already on" look .start-panel-live-audio-btn.is-active above
@@ -648,13 +692,22 @@ main {
    below still needs its own z-index to reliably win back the top
    layer. Faded down so the trace reads as texture behind the text,
    not competing with it; pointer-events:none so it never intercepts
-   the button's own click. */
+   the button's own click. filter:invert(1) turns the shared
+   drawWaveforms loop's own hardcoded white stroke black, to match
+   this button's own #111 text -- a pure CSS fix scoped to just this
+   canvas, rather than touching fractalize-core.js's shared drawing
+   code (which the audio-device panel's own meter elsewhere on the
+   page still relies on staying white). invert only affects RGB,
+   leaving the canvas's own transparent background (alpha) untouched.
+   The sticky banner's canvas below reuses this same trick, for the
+   same reason. */
 [data-live-audio-confirm] .fractal-audio-waveform {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   opacity: 0.4;
+  filter: invert(1);
   pointer-events: none;
 }
 

@@ -13,7 +13,7 @@
        commit hash right before each commit that touches either file,
        so it's always one commit behind true HEAD. Worth revisiting
        once this page is more stable and shipping less often. -->
-  <link rel="stylesheet" href="styles.css?v=ee968bc">
+  <link rel="stylesheet" href="styles.css?v=334c696">
   <link rel="stylesheet" href="fractalize-core/fractalize-core.css?v=fa60569">
 </head>
 <body>
@@ -46,6 +46,19 @@
        past. -->
   <nav class="sticky-nav" data-sticky-nav>
     <span class="sticky-nav-title">FRACTALIZE STUDIO</span>
+    <!-- A second, independent reminder along this bar's own bottom
+         edge -- shown only once BOTH the [data-live-audio-confirm]
+         button above has scrolled fully out of view AND live audio is
+         actually active (see app.js's own IntersectionObserver for
+         this element), so the "live audio is on" state stays visible
+         even once its own button is long since scrolled past. Reuses
+         the same [data-audio-waveform] hook every other waveform
+         meter on the page does -- see its own comment in styles.css
+         for why its stroke reads black here instead of the shared
+         loop's own white. -->
+    <div class="sticky-audio-banner" data-sticky-audio-banner aria-hidden="true">
+      <canvas class="fractal-audio-waveform" data-audio-waveform width="800" height="40"></canvas>
+    </div>
   </nav>
 
   <!-- Positioned/sized entirely by app.js's updateStepConnector, since
@@ -207,6 +220,6 @@
 
   <script src="photo-catalog.js"></script>
   <script src="fractalize-core/fractalize-core.js?v=fa60569"></script>
-  <script src="app.js?v=ee968bc"></script>
+  <script src="app.js?v=334c696"></script>
 </body>
 </html>

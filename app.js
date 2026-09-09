@@ -120,6 +120,7 @@
   const liveAudioConfirmLabel = document.querySelector("[data-live-audio-confirm-label]");
   const photoCollection = document.querySelector("[data-photo-collection]");
   const stepConnector = document.querySelector("[data-step-connector]");
+  const stickyAudioBanner = document.querySelector("[data-sticky-audio-banner]");
 
   // ➁ has two forms shown at different points (see index.html/app.js
   // below) -- the full "➁ Pick your image" line before "Use Live Audio
@@ -192,7 +193,48 @@
       // position, since it sits right after the panel. Deferred a frame
       // so that reflow settles before re-measuring.
       requestAnimationFrame(updateStepConnector);
+      updateStickyAudioBanner();
     });
+
+    // --- Sticky live-audio banner ---------------------------------------
+    // A positive-state strip along .sticky-nav's own bottom edge (see its
+    // own comment in index.html/styles.css), shown only once BOTH: the
+    // confirm button above has scrolled fully out of view, AND live audio
+    // is actually active -- neither on its own is enough (scrolled past
+    // it before ever granting audio, or granted but still looking at the
+    // button itself, shouldn't show this). Depends on two independent
+    // signals that change at different times -- scroll position (this
+    // observer) and liveAudioActive (the listener above) -- so both call
+    // the same recompute rather than either one owning the toggle
+    // directly.
+    let scrolledPastLiveAudioConfirm = false;
+    function updateStickyAudioBanner() {
+      if (!stickyAudioBanner) return;
+      stickyAudioBanner.classList.toggle("is-visible", scrolledPastLiveAudioConfirm && liveAudioActive);
+    }
+    if (stickyAudioBanner && liveAudioConfirm && "IntersectionObserver" in window) {
+      const stickyAudioBannerObserver = new IntersectionObserver(
+        ([entry]) => {
+          // "Scrolled past" specifically means the button left via the
+          // TOP (the visitor scrolled down beyond it) -- isIntersecting
+          // alone doesn't distinguish that from "hasn't been scrolled to
+          // yet" (also false), which would show this before the button
+          // was ever seen. height > 0 additionally guards against a
+          // display:none button (hidden before PICK YOUR IMAGE, or again
+          // after a full reset) reporting an empty, all-zero rect of its
+          // own -- bottom <= 0 would otherwise be trivially true then,
+          // wrongly reading as "scrolled past" a button that was never
+          // actually on screen to begin with.
+          scrolledPastLiveAudioConfirm =
+            !entry.isIntersecting &&
+            entry.boundingClientRect.height > 0 &&
+            entry.boundingClientRect.bottom <= 0;
+          updateStickyAudioBanner();
+        },
+        { threshold: 0 }
+      );
+      stickyAudioBannerObserver.observe(liveAudioConfirm);
+    }
 
     function launchRandomFractal() {
       const pool = [];
@@ -260,6 +302,13 @@
           liveAudioConfirm.classList.toggle("is-active", liveAudioActive);
           liveAudioConfirm.hidden = false;
         }
+        // Its own IntersectionObserver should already catch this button
+        // newly appearing in the layout, but a deferred explicit call
+        // here (same reflow-settling reasoning as updateStepConnector's
+        // own deferred calls elsewhere) keeps the sticky banner from
+        // ever lagging a frame behind if a visitor is already scrolled
+        // past where this button lands the instant it shows up.
+        requestAnimationFrame(updateStickyAudioBanner);
         return;
       }
       startPanel.hidden = true;
@@ -268,6 +317,9 @@
         liveAudioConfirm.hidden = true;
         liveAudioConfirm.classList.remove("is-active");
       }
+      // Same reasoning as the keepProgress branch above, in reverse --
+      // this button just disappeared.
+      requestAnimationFrame(updateStickyAudioBanner);
       if (startFractalizingHeader) startFractalizingHeader.hidden = true;
       if (startFractalizingStep) {
         startFractalizingStep.hidden = true;
