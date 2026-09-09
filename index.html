@@ -5,7 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Fractalize Studio</title>
   <meta name="description" content="Turn any photo into a living, music-reactive fractal -- right in your browser.">
-  <link rel="stylesheet" href="styles.css">
+  <!-- ?v= cache-busts this page's own styles.css/app.js too, not just
+       the fractalize-core submodule's -- both were serving stale
+       browser/CDN-cached copies for up to Cache-Control's own 10min
+       window after a deploy, same "chicken-and-egg" convention as
+       FRACTAL_VERSION in fractalize-core.js: bumped to the current
+       commit hash right before each commit that touches either file,
+       so it's always one commit behind true HEAD. Worth revisiting
+       once this page is more stable and shipping less often. -->
+  <link rel="stylesheet" href="styles.css?v=e7cad0f">
   <link rel="stylesheet" href="fractalize-core/fractalize-core.css?v=fa60569">
 </head>
 <body>
@@ -161,6 +169,6 @@
 
   <script src="photo-catalog.js"></script>
   <script src="fractalize-core/fractalize-core.js?v=fa60569"></script>
-  <script src="app.js"></script>
+  <script src="app.js?v=e7cad0f"></script>
 </body>
 </html>
