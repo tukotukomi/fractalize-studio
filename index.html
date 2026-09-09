@@ -91,8 +91,8 @@
         <svg class="upload-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="36px" height="36px" fill="#e3e3e3">
           <path d="M440-320v-326L336-542l-56-58 200-200 200 200-56 58-104-104v326h-80ZM240-160q-33 0-56.5-23.5T160-240v-120h80v120h480v-120h80v120q0 33-23.5 56.5T720-160H240Z"/>
         </svg>
-        <span class="upload-text">Drop a photo here, or click to choose one</span>
-        <input type="file" id="upload-input" accept="image/*" data-upload-input hidden>
+        <span class="upload-text">Drop photos here, or click to choose</span>
+        <input type="file" id="upload-input" accept="image/*" multiple data-upload-input hidden>
       </label>
       <div class="upload-preview-row" data-upload-actions hidden>
         <img class="upload-preview" data-upload-preview alt="">
@@ -103,12 +103,21 @@
       </div>
     </section>
 
-    <!-- Populated from IndexedDB (see app.js) -- uploaded photos saved
-         on a previous visit, on this device/browser only. Hidden until
-         there's at least one to show. -->
-    <section class="uploads-catalog" data-uploads-catalog hidden>
+    <!-- Always visible now, not just once there's an upload -- its first
+         tile is a persistent "add photos" control (multiple files at
+         once), the rest populated from IndexedDB (see app.js) with
+         whatever's been saved on a previous visit, on this
+         device/browser only. -->
+    <section class="uploads-catalog" data-uploads-catalog>
       <h2 class="catalog-heading">Your Uploads</h2>
-      <div class="catalog-row" data-uploads-row></div>
+      <div class="catalog-row" data-uploads-row>
+        <label class="catalog-thumb catalog-add-thumb" for="uploads-add-input" aria-label="Add photos">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="28px" height="28px" fill="#e3e3e3">
+            <path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"/>
+          </svg>
+          <input type="file" id="uploads-add-input" accept="image/*" multiple data-uploads-add-input hidden>
+        </label>
+      </div>
     </section>
 
     <section class="catalog">

@@ -295,9 +295,11 @@ main {
 /* --- Your uploads ------------------------------------------------------- */
 /* Reuses .catalog-heading/.catalog-row/.catalog-thumb/.thumb-action below
    verbatim (a grid of thumbnails is a grid of thumbnails, whether the
-   src is a curated URL or a blob: URL from IndexedDB) -- only its own
-   bottom margin needed, matching .upload-card's, to keep the same
-   rhythm of spacing before the curated catalog starts. */
+   src is a curated URL or a blob: URL from IndexedDB), plus its own
+   .catalog-add-thumb (also below) for the row's first, permanent "add
+   photos" tile -- only its own bottom margin needed, matching
+   .upload-card's, to keep the same rhythm of spacing before the
+   curated catalog starts. */
 .uploads-catalog {
   margin-bottom: 64px;
 }
@@ -379,6 +381,32 @@ main {
 
 .thumb-action:hover {
   background: #fff;
+}
+
+/* .catalog-thumb above gives this its size/shape (aspect-ratio, radius,
+   overflow) -- these override its plain-fill look with the same dashed
+   "empty dropzone" treatment .upload-dropzone uses, just square instead
+   of the dropzone's own tall rectangle. Always the row's first tile
+   (see index.html), a <label> wrapping its own hidden file input
+   (accept multiple) so clicking it opens the file picker with no JS
+   wiring needed for that part. */
+.catalog-add-thumb {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px dashed rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.03);
+  cursor: pointer;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.catalog-add-thumb:hover {
+  border-color: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.catalog-add-thumb svg {
+  opacity: 0.8;
 }
 
 /* --- "Start fractalizing" panel ----------------------------------------- */

@@ -310,6 +310,10 @@
 
   const uploadsSection = document.querySelector("[data-uploads-catalog]");
   const uploadsRow = document.querySelector("[data-uploads-row]");
+  // The row's first, permanent child (see index.html) -- new thumbs are
+  // always inserted right after it, never before, so it stays the
+  // first tile no matter how many uploads pile up around it.
+  const addTile = uploadsRow ? uploadsRow.querySelector(".catalog-add-thumb") : null;
   const DELETE_ICON =
     '<svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="16px" fill="#111"><path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360Z"/></svg>';
 
@@ -343,7 +347,6 @@
       deleteUploadedPhoto(record.id).then(() => {
         URL.revokeObjectURL(url);
         thumb.remove();
-        if (!uploadsRow.children.length) uploadsSection.hidden = true;
         const idx = uploadedPhotoRecords.findIndex((r) => r.id === record.id);
         if (idx !== -1) uploadedPhotoRecords.splice(idx, 1);
         rebuildFullCatalog();
@@ -356,15 +359,47 @@
   if (uploadsSection && uploadsRow) {
     getAllUploadedPhotos()
       .then((records) => {
-        if (!records.length) return;
         records.forEach((record) => uploadsRow.appendChild(renderUploadThumb(record)));
-        uploadsSection.hidden = false;
-        rebuildFullCatalog();
+        if (records.length) rebuildFullCatalog();
       })
       .catch(() => {
         // IndexedDB unavailable/blocked -- new uploads below still work
         // for the current session, just without persistence.
       });
+  }
+
+  // Saves any number of image files to IndexedDB and adds a thumb for
+  // each, right after the row's permanent add-tile -- shared by both
+  // upload entry points below (the dropzone and the add-tile's own
+  // file input). Each save is independent, so completion order (and so
+  // thumb order among a batch) isn't guaranteed to match selection
+  // order -- not worth sequencing for what's a cosmetic detail.
+  function saveFilesToUploads(fileList) {
+    if (!uploadsSection || !uploadsRow || !addTile) return;
+    const files = Array.prototype.filter.call(fileList || [], (f) => f && f.type.indexOf("image/") === 0);
+    files.forEach((file) => {
+      saveUploadedPhoto(file)
+        .then((record) => {
+          uploadsRow.insertBefore(renderUploadThumb(record), addTile.nextSibling);
+          rebuildFullCatalog();
+        })
+        .catch(() => {
+          // Storage unavailable or quota exceeded -- this upload still
+          // works for the current session via the dropzone's own preview
+          // (single-file case), it just won't be there on a future visit.
+        });
+    });
+  }
+
+  // The add-tile's own hidden file input (see index.html) -- a <label>
+  // wraps it, so clicking the tile already opens the picker with no JS
+  // needed for that part; this just handles the file(s) once chosen.
+  const uploadsAddInput = document.querySelector("[data-uploads-add-input]");
+  if (uploadsAddInput) {
+    uploadsAddInput.addEventListener("change", () => {
+      saveFilesToUploads(uploadsAddInput.files);
+      uploadsAddInput.value = ""; // lets the same file(s) be re-selected later
+    });
   }
 
   // --- Upload flow -----------------------------------------------------
@@ -378,29 +413,25 @@
   const previewImg = document.querySelector("[data-upload-preview]");
   let uploadedUrl = null;
 
-  function handleFile(file) {
-    if (!file || file.type.indexOf("image/") !== 0) return;
-    if (uploadedUrl) URL.revokeObjectURL(uploadedUrl);
-    uploadedUrl = URL.createObjectURL(file);
-    previewImg.src = uploadedUrl;
-    actionsRow.hidden = false;
+  function handleFiles(fileList) {
+    const files = Array.prototype.filter.call(fileList || [], (f) => f && f.type.indexOf("image/") === 0);
+    if (!files.length) return;
 
-    if (uploadsSection && uploadsRow) {
-      saveUploadedPhoto(file)
-        .then((record) => {
-          uploadsRow.insertBefore(renderUploadThumb(record), uploadsRow.firstChild);
-          uploadsSection.hidden = false;
-          rebuildFullCatalog();
-        })
-        .catch(() => {
-          // Storage unavailable or quota exceeded -- this upload still
-          // works for the current session via the preview above, it
-          // just won't be there on a future visit.
-        });
+    // The dropzone's own preview + "Open as Fractal"/"Visualize to
+    // Music" row only makes sense for a single photo at a time -- with
+    // more than one selected, they're all still saved to Your Uploads
+    // below, where each one gets those same two actions individually.
+    if (files.length === 1) {
+      if (uploadedUrl) URL.revokeObjectURL(uploadedUrl);
+      uploadedUrl = URL.createObjectURL(files[0]);
+      previewImg.src = uploadedUrl;
+      actionsRow.hidden = false;
     }
+
+    saveFilesToUploads(files);
   }
 
-  fileInput.addEventListener("change", () => handleFile(fileInput.files[0]));
+  fileInput.addEventListener("change", () => handleFiles(fileInput.files));
 
   ["dragenter", "dragover"].forEach((evt) => {
     dropzone.addEventListener(evt, (e) => {
@@ -415,8 +446,8 @@
     });
   });
   dropzone.addEventListener("drop", (e) => {
-    const file = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
-    if (file) handleFile(file);
+    const files = e.dataTransfer && e.dataTransfer.files;
+    if (files && files.length) handleFiles(files);
   });
 
   document.querySelector("[data-upload-fractal]").addEventListener("click", () => {
