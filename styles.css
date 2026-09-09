@@ -519,7 +519,9 @@ main {
    just because it reads well here too, not because this is layered
    above anything (no position/z-index needed either). */
 .start-panel {
-  margin: 24px 0 32px;
+  /* Top cut 80% (was 24px) -- less gap between ➀'s own text and the
+     panel itself. */
+  margin: 4.8px 0 32px;
   padding: 20px 24px;
   border-radius: 16px;
   background: rgba(255, 255, 255, 0.03);
@@ -544,8 +546,8 @@ main {
    stays #111, the same weight the white default already relies on for
    contrast. */
 .start-panel-live-audio-btn.is-active {
-  background: #00cc4f;
-  border-color: #00cc4f;
+  background: #b8cab3;
+  border-color: #b8cab3;
 }
 
 .start-panel-live-audio-btn.is-active:hover {
@@ -597,26 +599,27 @@ main {
    entirely at that point) -- a duplicate of the panel's own live-audio
    button, standalone rather than inside that panel's card. Full width
    (unlike every other auto-width .hero-cta) so the waveform canvas
-   below has real room to read. Margin is 8px's own value further cut
-   by 80% (1.6px) -- was already the minimal gap keeping ➀/➁ from
-   ending up far apart with this in between; this pulls them closer
-   still. position/overflow here (not on .hero-cta generally) are for
-   the waveform canvas below: relative gives it something to anchor
-   against, hidden clips it to this button's own pill shape instead of
-   letting it show square corners underneath. */
+   below has real room to read. Margin is 1.6px's own value (already
+   an 80% cut from the original 8px) cut by 80% again (0.32px) -- was
+   already the minimal gap keeping ➀/➁ from ending up far apart with
+   this in between; this pulls them closer still. position/overflow
+   here (not on .hero-cta generally) are for the waveform canvas
+   below: relative gives it something to anchor against, hidden clips
+   it to this button's own pill shape instead of letting it show
+   square corners underneath. */
 [data-live-audio-confirm] {
   position: relative;
   overflow: hidden;
   width: 100%;
-  margin: 1.6px 0;
+  margin: 0.32px 0;
 }
 
-/* Same green "already on" look .start-panel-live-audio-btn.is-active
-   above uses, duplicated here rather than shared -- this button isn't
-   a .start-panel-live-audio-btn, so that selector doesn't reach it. */
+/* Same "already on" look .start-panel-live-audio-btn.is-active above
+   uses, duplicated here rather than shared -- this button isn't a
+   .start-panel-live-audio-btn, so that selector doesn't reach it. */
 [data-live-audio-confirm].is-active {
-  background: #00cc4f;
-  border-color: #00cc4f;
+  background: #b8cab3;
+  border-color: #b8cab3;
 }
 
 [data-live-audio-confirm].is-active:hover {
@@ -651,6 +654,17 @@ main {
 [data-live-audio-confirm-label] {
   position: relative;
   z-index: 1;
+}
+
+/* Only in the active ("Live Audio In Use") state -- the inactive
+   label ("Use Live Audio Input") sits on a white, waveform-free
+   button, so it has nothing to block. A solid positive-state
+   background here (matching the button's own .is-active fill) paints
+   over the waveform trace directly behind the text's own line box,
+   so the moving line never cuts through the letters themselves --
+   everywhere else on the button the trace still shows through. */
+[data-live-audio-confirm].is-active [data-live-audio-confirm-label] {
+  background: #b8cab3;
 }
 
 /* --- Footer ----------------------------------------------------------- */

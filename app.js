@@ -179,8 +179,9 @@
     // real, granted browser permission state, not just "was clicked".
     // Drives the button's two-stage label/color: "Use Live Audio
     // Input" (not yet active, clicking requests it) vs "Live Audio In
-    // Use" in #00CC4F (already active, clicking proceeds -- see
-    // .start-panel-live-audio-btn.is-active in styles.css).
+    // Use" in the positive-state color, #b8cab3 (already active,
+    // clicking proceeds -- see .start-panel-live-audio-btn.is-active
+    // in styles.css).
     let liveAudioActive = false;
     startPanelLiveAudioPanel.addEventListener("liveaudiostatechange", (e) => {
       liveAudioActive = e.detail.active;
