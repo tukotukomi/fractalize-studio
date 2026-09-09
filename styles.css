@@ -197,12 +197,10 @@ a {
 }
 
 /* Both of this flow's step lines share this class -- "➀ Check your
-   audio settings" and "➁ Pick your image" -- shown/hidden together
-   (see app.js), both as soon as .start-panel opens, not gated behind
-   finishing the other first. Left-aligned to match the header and
-   .start-panel. [data-pick-image] itself (the actual button for step
-   2, further down) has no marker of its own -- this label already
-   names that step. */
+   audio settings" and "➁ Pick your image" (later just "➁", see
+   .pick-image-row below) -- shown/hidden together (see app.js), both
+   as soon as .start-panel opens, not gated behind finishing the other
+   first. Left-aligned to match the header and .start-panel. */
 .start-fractalizing-step {
   margin: 0;
   text-align: left;
@@ -210,18 +208,63 @@ a {
   color: rgba(255, 255, 255, 0.75);
 }
 
-/* Denotes progress between the two step lines above -- only shown once
-   both are simultaneously visible (see updateStepConnector in app.js,
-   which also positions/sizes this: no ancestor here is a fixed size or
-   shares one with both endpoints, so this is JS-measured against each
-   line's own getBoundingClientRect() rather than a CSS-only span, and
-   re-measured live while .start-panel is open since its own content
-   changing height -- e.g. granting live audio -- shifts ➁ along with
-   it). Runs from the center of ➀'s own bottom edge to the center of
-   ➁'s own top edge, not edge-to-edge of the two lines' full height.
-   Sits absolutely against the page itself (no positioned ancestor
-   needed) since its two endpoints live in different containers
-   (.start-fractalizing-step in .hero, [data-pick-image-step] in main). */
+/* Whichever step is the one actually in progress right now (see
+   app.js) -- bigger and full-white instead of the dimmer default
+   above, same idea a numbered wizard's own current-step highlight
+   would use. */
+.start-fractalizing-step.is-current {
+  font-size: calc(0.95rem + 4px);
+  color: #fff;
+}
+
+/* Replaces [data-pick-image-step]'s full "➁ Pick your image" line once
+   "Use Live Audio Input" is clicked (see app.js) -- the marker (reusing
+   .start-fractalizing-step above, so .is-current applies here the same
+   way) pinned to the row's own left edge, the button still centered
+   the way every other .hero-cta is (margin:auto restored below, since
+   the marker being absolutely positioned takes it out of flow rather
+   than sharing normal flow with it). */
+.pick-image-row {
+  position: relative;
+  margin: 28px 0 0;
+}
+
+.pick-image-row .start-fractalizing-step {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  margin: 0;
+}
+
+.pick-image-row .hero-cta {
+  margin: 0 auto;
+}
+
+/* Added once PICK YOUR IMAGE's own job is done (see app.js) --
+   visibility, not [hidden]/display:none, so the row doesn't collapse
+   out from under the marker sitting next to it (that marker is
+   absolutely positioned, so it doesn't contribute any height of its
+   own -- the button normally does). */
+.pick-image-row .hero-cta.is-done {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* Denotes progress between ➀ and whichever of ➁'s two forms is
+   currently showing ([data-pick-image-step]'s full text, or the
+   [data-pick-image-marker] alongside PICK YOUR IMAGE once "Use Live
+   Audio Input" is clicked) -- only shown once both are simultaneously
+   visible (see updateStepConnector in app.js, which also
+   positions/sizes this: no ancestor here is a fixed size or shares one
+   with both endpoints, so this is JS-measured against each line's own
+   getBoundingClientRect() rather than a CSS-only span, and re-measured
+   live whenever either endpoint's own size/visibility can change --
+   .start-panel's own height while open, .is-current's bigger font,
+   ➁'s own text/row swap). Runs from ➀'s own bottom edge to ➁'s own top
+   edge, not edge-to-edge of the two lines' full height. Sits absolutely
+   against the page itself (no positioned ancestor needed) since its
+   two endpoints live in different containers (.hero vs main). */
 .step-connector {
   position: absolute;
   width: 0;

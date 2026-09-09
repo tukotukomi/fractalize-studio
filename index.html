@@ -13,7 +13,7 @@
        commit hash right before each commit that touches either file,
        so it's always one commit behind true HEAD. Worth revisiting
        once this page is more stable and shipping less often. -->
-  <link rel="stylesheet" href="styles.css?v=e7cad0f">
+  <link rel="stylesheet" href="styles.css?v=9c4c97e">
   <link rel="stylesheet" href="fractalize-core/fractalize-core.css?v=fa60569">
 </head>
 <body>
@@ -82,8 +82,10 @@
     <button type="button" class="hero-cta" data-start-fractalizing aria-expanded="false" aria-controls="start-panel">START FRACTALIZING</button>
     <h2 class="start-fractalizing-header" data-start-fractalizing-header hidden>FRACTALIZE SETUP</h2>
     <!-- Shown/hidden together with the header above (see app.js) -- the
-         first of two step markers in this flow, the second (➁) sits
-         next to PICK YOUR IMAGE further down once that's revealed. -->
+         first of two step lines in this flow, ➁ further down. Gets
+         .is-current (bigger, white -- see styles.css) while step 1 is
+         the one actually in progress, handed off to ➁ once "Use Live
+         Audio Input" is clicked. -->
     <p class="start-fractalizing-step" data-start-fractalizing-step hidden>➀ Check your audio settings</p>
   </header>
 
@@ -124,14 +126,25 @@
          finishing step 1 first. Same .start-fractalizing-step styling
          as ➀ so the two read as one matching pair. -->
     <p class="start-fractalizing-step" data-pick-image-step hidden>➁ Pick your image</p>
-    <!-- Hidden until the live-audio button in .start-panel is first
-         clicked (see app.js) -- ➁'s own actionable control, revealed
-         once ready, underneath the label above (no marker of its own
-         needed -- that label already names this step). Revealing this
-         instead of launching straight into a random fractal is what
-         replaces that old placeholder behavior: the next step is
-         picking a specific photo, not a random one. -->
-    <button type="button" class="hero-cta" data-pick-image hidden>PICK YOUR IMAGE</button>
+    <!-- Replaces the line above once "Use Live Audio Input" is clicked
+         (see app.js) -- ➁'s own preview text simplifies to just the
+         marker now that the row's real control (PICK YOUR IMAGE) is
+         what actually names this step. The marker stays pinned to the
+         row's own left edge (matching every other step line's own left
+         alignment); the button stays centered like every other
+         .hero-cta (margin:auto restored in styles.css, since the
+         marker being absolutely positioned takes it out of flow rather
+         than sharing normal flow with it). Revealing this instead of
+         launching straight into a random fractal is what replaces that
+         old placeholder behavior: the next step is picking a specific
+         photo, not a random one. Stays visible once reached, same as
+         ➀ above -- .is-done below (added once the button's own job is
+         done) just fades the button out in place, keeping the row's
+         height so the marker doesn't jump. -->
+    <div class="pick-image-row" data-pick-image-row hidden>
+      <p class="start-fractalizing-step" data-pick-image-marker aria-hidden="true">➁</p>
+      <button type="button" class="hero-cta" data-pick-image>PICK YOUR IMAGE</button>
+    </div>
 
     <!-- Hidden until [data-pick-image] above is clicked (see app.js) --
          browsing straight to a photo is a second, more deliberate path
@@ -169,6 +182,6 @@
 
   <script src="photo-catalog.js"></script>
   <script src="fractalize-core/fractalize-core.js?v=fa60569"></script>
-  <script src="app.js?v=e7cad0f"></script>
+  <script src="app.js?v=9c4c97e"></script>
 </body>
 </html>

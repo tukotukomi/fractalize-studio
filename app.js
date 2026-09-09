@@ -114,8 +114,21 @@
   const startFractalizingStep = document.querySelector("[data-start-fractalizing-step]");
   const pickImageBtn = document.querySelector("[data-pick-image]");
   const pickImageStep = document.querySelector("[data-pick-image-step]");
+  const pickImageRow = document.querySelector("[data-pick-image-row]");
+  const pickImageMarker = document.querySelector("[data-pick-image-marker]");
   const photoCollection = document.querySelector("[data-photo-collection]");
   const stepConnector = document.querySelector("[data-step-connector]");
+
+  // ➁ has two forms shown at different points (see index.html/app.js
+  // below) -- the full "➁ Pick your image" line before "Use Live Audio
+  // Input" is clicked, then just the marker alongside PICK YOUR IMAGE
+  // after. Whichever is actually visible right now is what the step
+  // connector should point at.
+  function currentStep2El() {
+    if (pickImageStep && !pickImageStep.hidden) return pickImageStep;
+    if (pickImageMarker && pickImageRow && !pickImageRow.hidden) return pickImageMarker;
+    return null;
+  }
 
   // Dotted line "denoting progress" between the ➀/➁ step lines -- both
   // shown together as soon as .start-panel opens (see openStartPanel
@@ -125,18 +138,19 @@
   // between them -- so this measures each line's own
   // getBoundingClientRect() directly and positions/sizes
   // .step-connector in document coordinates instead of relying on CSS
-  // alone. Runs from the center of ➀'s own bottom edge to the center
-  // of ➁'s own top edge, not the full height of either line.
+  // alone. Runs from ➀'s own bottom edge to ➁'s own top edge, not the
+  // full height of either line.
   function updateStepConnector() {
-    if (!stepConnector || !startFractalizingStep || !pickImageStep) return;
-    if (startFractalizingStep.hidden || pickImageStep.hidden) {
+    if (!stepConnector || !startFractalizingStep) return;
+    const to = currentStep2El();
+    if (startFractalizingStep.hidden || !to) {
       stepConnector.hidden = true;
       return;
     }
     const from = startFractalizingStep.getBoundingClientRect();
-    const to = pickImageStep.getBoundingClientRect();
+    const toRect = to.getBoundingClientRect();
     const top = from.bottom + window.scrollY;
-    const bottom = to.top + window.scrollY;
+    const bottom = toRect.top + window.scrollY;
     stepConnector.style.top = top + "px";
     stepConnector.style.height = Math.max(0, bottom - top) + "px";
     // Centered under each line's own left edge's midpoint isn't the
@@ -192,7 +206,12 @@
       // above [data-start-fractalizing] in index.html.
       startBtn.hidden = true;
       if (startFractalizingHeader) startFractalizingHeader.hidden = false;
-      if (startFractalizingStep) startFractalizingStep.hidden = false;
+      if (startFractalizingStep) {
+        startFractalizingStep.hidden = false;
+        // Step 1 is the one actually in progress now -- see
+        // .start-fractalizing-step.is-current in styles.css.
+        startFractalizingStep.classList.add("is-current");
+      }
       // ➁'s own label shows right alongside ➀ from here too -- see the
       // comment above [data-pick-image-step] in index.html -- with the
       // connector between them following in the same tick below.
@@ -224,9 +243,14 @@
       if (keepProgress) return;
       startBtn.hidden = false;
       if (startFractalizingHeader) startFractalizingHeader.hidden = true;
-      if (startFractalizingStep) startFractalizingStep.hidden = true;
+      if (startFractalizingStep) {
+        startFractalizingStep.hidden = true;
+        startFractalizingStep.classList.remove("is-current");
+      }
       if (pickImageStep) pickImageStep.hidden = true;
-      if (pickImageBtn) pickImageBtn.hidden = true;
+      if (pickImageRow) pickImageRow.hidden = true;
+      if (pickImageMarker) pickImageMarker.classList.remove("is-current");
+      if (pickImageBtn) pickImageBtn.classList.remove("is-done");
       if (stepConnector) stepConnector.hidden = true;
     }
 
@@ -246,10 +270,15 @@
       // closes -- once reached, this counts as session progress, same
       // as .photo-collection itself never re-hiding once shown.
       startPanelSkipBtn.classList.add("is-link");
-      if (pickImageBtn) pickImageBtn.hidden = false;
-      // Revealing the button just above doesn't move ➁'s own label (it
-      // sits before the button, see index.html), but do it anyway in
-      // case a future edit changes that -- cheap, and correct either way.
+      // ➁'s own preview line simplifies to just the marker now that
+      // PICK YOUR IMAGE (the row it shares with) is what actually names
+      // this step -- see .pick-image-row's own comment in index.html.
+      // Step 1 hands "in progress" off to step 2 at the same time (see
+      // .is-current in styles.css).
+      if (pickImageStep) pickImageStep.hidden = true;
+      if (pickImageRow) pickImageRow.hidden = false;
+      if (startFractalizingStep) startFractalizingStep.classList.remove("is-current");
+      if (pickImageMarker) pickImageMarker.classList.add("is-current");
       requestAnimationFrame(updateStepConnector);
       if (liveAudioActive) return;
       // Drives the same hidden checkbox wireLiveAudioControls is
@@ -268,9 +297,12 @@
       pickImageBtn.addEventListener("click", () => {
         photoCollection.hidden = false;
         closeStartPanel(true);
-        // Its own job done -- ➁'s label (already showing, see
-        // openStartPanel) stays behind as this step's permanent record.
-        pickImageBtn.hidden = true;
+        // Its own job done -- the marker next to it (already showing,
+        // see the live-audio click handler above) stays behind as this
+        // step's permanent record. .is-done, not hidden: keeps the
+        // row's own height (see .pick-image-row's own comment) so the
+        // marker doesn't jump once the button disappears.
+        pickImageBtn.classList.add("is-done");
         // Deferred a frame for the same reason openStartPanel's own
         // scroll is -- lets the reflow from unhiding/closing settle
         // first (the step-connector needs that same settled layout to
