@@ -74,7 +74,9 @@ a {
 }
 
 .hero-title {
-  margin: 0 0 12px;
+  /* Up 30% (was 12px) -- more space between the logo and the animated
+     banner below it. */
+  margin: 0 0 15.6px;
 }
 
 /* Replaces the old gradient-text wordmark -- same 1280x300 aspect ratio
