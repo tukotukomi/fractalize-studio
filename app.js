@@ -402,6 +402,14 @@
     });
   }
 
+  // Same "+" add-photos tile, now also inside the fractal's own camera-
+  // roll grid and the visualizer's settings panel -- opting in here
+  // means a photo picked from either lands in "Your Uploads" exactly
+  // like one added from this page directly (same save path, same
+  // catalog refresh). Set once at load, well before a visitor could
+  // ever open either overlay.
+  window.FractalizeCore.setUploadHandler(saveFilesToUploads);
+
   // --- Upload flow -----------------------------------------------------
   // A blob: URL only lives as long as this page does, so it's opened
   // with persistQueue:false (see fractalize-core's own README) --
