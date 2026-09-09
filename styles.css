@@ -68,7 +68,8 @@ a {
 .hero {
   max-width: 720px;
   margin: 0 auto;
-  padding: 96px 0 48px;
+  /* Top halved (was 96px) -- less space above the logo banner. */
+  padding: 48px 0;
   text-align: center;
 }
 
@@ -99,7 +100,9 @@ a {
 .hero-banner {
   display: block;
   width: min(100%, 600px);
-  margin: 0 auto 20px;
+  /* Bottom up 50% (was 20px) -- more space below the logo banner,
+     before the tagline. */
+  margin: 0 auto 30px;
   border-radius: 16px;
 }
 
@@ -437,6 +440,8 @@ main {
 
 @media (max-width: 600px) {
   .hero {
-    padding: 64px 0 32px;
+    /* Top halved too (was 64px), same as the base rule above -- keeps
+       this smaller than the desktop value, as it was before. */
+    padding: 32px 0;
   }
 }
