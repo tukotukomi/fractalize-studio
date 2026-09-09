@@ -392,43 +392,17 @@ main {
 /* --- "Start fractalizing" panel ----------------------------------------- */
 /* An inline disclosure, not a popup -- toggled open by .hero-cta, sits
    between it and .live-audio-help in the page's own flow (see
-   index.html), styled as the same dark-glass card the earlier modal
-   version used. No position/z-index needed: it's a normal block in
-   the document, not layered above anything. */
+   index.html). No width override of its own, same as .upload-card/
+   .catalog/.live-audio-help above -- a plain child of main, full width.
+   Same faint-fill card treatment as .live-audio-help too, just because
+   it's the adjacent element, not because it's layered above anything
+   (no position/z-index needed either). */
 .start-panel {
-  position: relative;
-  width: 100%;
-  max-width: 420px;
-  margin: 24px auto 0;
-  padding: 40px 24px 24px;
-  border-radius: 20px;
-  background: rgba(20, 20, 20, 0.95);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-}
-
-.start-panel-close {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  appearance: none;
-  -webkit-appearance: none;
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.1);
-  color: #fff;
-  font-size: 1.3rem;
-  line-height: 1;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.start-panel-close:hover {
-  background: rgba(255, 255, 255, 0.2);
+  margin: 24px 0 32px;
+  padding: 20px 24px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .start-panel-live-audio-btn,

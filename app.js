@@ -117,11 +117,12 @@
   // on open reflects an already-granted stream from THAT card
   // immediately, rather than only after this one's own button is
   // clicked. Inline disclosure, not a popup -- .hero-cta just toggles
-  // it open/closed in place.
+  // it open/closed in place (clicking it again, or either of the
+  // panel's own two buttons, is how it closes -- no separate close
+  // control).
   const startBtn = document.querySelector("[data-start-fractalizing]");
   const startPanel = document.querySelector("[data-start-panel]");
   if (startBtn && startPanel) {
-    const startPanelClose = document.querySelector("[data-start-panel-close]");
     const startPanelLiveAudioBtn = document.querySelector("[data-start-panel-live-audio-btn]");
     const startPanelSkipBtn = document.querySelector("[data-start-panel-skip]");
     const startPanelCheckbox = startPanel.querySelector('[data-toggle="liveAudio"]');
@@ -159,7 +160,21 @@
       startPanel.hidden = false;
       startBtn.setAttribute("aria-expanded", "true");
       window.FractalizeCore.syncLiveAudioPanel(startPanelLiveAudioPanel);
-      startPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+      // block:'start' was jumping the *whole page* to put the panel at
+      // the very top of the viewport -- a jarring scroll past the CTA
+      // that had just been clicked, and on iOS Safari specifically,
+      // scrolling immediately on the same tick the "hidden" attribute
+      // is removed can run against a layout the browser hasn't finished
+      // reflowing yet (and its dynamic address bar resizing the
+      // viewport mid-scroll only makes that worse), landing the scroll
+      // position past the panel entirely so it never visibly appears.
+      // block:'nearest' only scrolls the minimum needed to bring it
+      // into view (often nothing, since it's right below the CTA), and
+      // deferring one frame lets the reflow from unhiding it settle
+      // first.
+      requestAnimationFrame(() => {
+        startPanel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      });
     }
     function closeStartPanel() {
       startPanel.hidden = true;
@@ -170,7 +185,6 @@
       if (startPanel.hidden) openStartPanel();
       else closeStartPanel();
     });
-    startPanelClose.addEventListener("click", closeStartPanel);
 
     startPanelLiveAudioBtn.addEventListener("click", () => {
       if (liveAudioActive) {
