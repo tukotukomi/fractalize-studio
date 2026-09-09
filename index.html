@@ -60,8 +60,13 @@
          covered the same ground in a more guided way) -- resolve live
          audio FIRST, then pick a photo (see [data-pick-image]/
          .photo-collection below, both hidden until this flow reveals
-         them), instead of browsing straight to one. -->
+         them), instead of browsing straight to one. Swaps places with
+         the header just below it once clicked (see app.js) -- the
+         button IS the entry point, so once .start-panel is open there's
+         nothing left for it to do; the header names what's now open in
+         its place instead. -->
     <button type="button" class="hero-cta" data-start-fractalizing aria-expanded="false" aria-controls="start-panel">START FRACTALIZING</button>
+    <h2 class="start-fractalizing-header" data-start-fractalizing-header hidden>FRACTALIZE SETUP</h2>
   </header>
 
   <main>

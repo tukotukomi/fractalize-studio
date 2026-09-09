@@ -110,6 +110,7 @@
   // close control).
   const startBtn = document.querySelector("[data-start-fractalizing]");
   const startPanel = document.querySelector("[data-start-panel]");
+  const startFractalizingHeader = document.querySelector("[data-start-fractalizing-header]");
   const pickImageBtn = document.querySelector("[data-pick-image]");
   const photoCollection = document.querySelector("[data-photo-collection]");
   if (startBtn && startPanel) {
@@ -146,26 +147,32 @@
     function openStartPanel() {
       startPanel.hidden = false;
       startBtn.setAttribute("aria-expanded", "true");
+      // The button that was just clicked is gone now, replaced by a
+      // header naming what's open in its place -- see the comment
+      // above [data-start-fractalizing] in index.html.
+      startBtn.hidden = true;
+      if (startFractalizingHeader) startFractalizingHeader.hidden = false;
       window.FractalizeCore.syncLiveAudioPanel(startPanelLiveAudioPanel);
-      // block:'start' was jumping the *whole page* to put the panel at
-      // the very top of the viewport -- a jarring scroll past the CTA
-      // that had just been clicked, and on iOS Safari specifically,
-      // scrolling immediately on the same tick the "hidden" attribute
-      // is removed can run against a layout the browser hasn't finished
-      // reflowing yet (and its dynamic address bar resizing the
-      // viewport mid-scroll only makes that worse), landing the scroll
-      // position past the panel entirely so it never visibly appears.
-      // block:'nearest' only scrolls the minimum needed to bring it
-      // into view (often nothing, since it's right below the CTA), and
-      // deferring one frame lets the reflow from unhiding it settle
-      // first.
+      // Deferred a frame so the reflow from the hidden/shown swap above
+      // settles first -- scrolling on the same tick can run against a
+      // layout the browser hasn't finished recomputing yet, and on iOS
+      // Safari specifically, its dynamic address bar resizing the
+      // viewport mid-scroll only makes that worse. block:'start' (not
+      // the panel's own old 'nearest') is deliberate here: the header
+      // is the new thing to focus on -- unlike scrolling the panel
+      // itself while the CTA above it was still visible, there's no
+      // longer anything above worth not scrolling past, especially on
+      // mobile where the header can otherwise land under the sticky
+      // nav or off the top of a short viewport entirely.
       requestAnimationFrame(() => {
-        startPanel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        (startFractalizingHeader || startPanel).scrollIntoView({ behavior: "smooth", block: "start" });
       });
     }
     function closeStartPanel() {
       startPanel.hidden = true;
       startBtn.setAttribute("aria-expanded", "false");
+      startBtn.hidden = false;
+      if (startFractalizingHeader) startFractalizingHeader.hidden = true;
     }
 
     startBtn.addEventListener("click", () => {

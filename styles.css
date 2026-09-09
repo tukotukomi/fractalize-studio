@@ -117,12 +117,10 @@ a {
 /* A plain <hr> reset to a single thin line -- no border-style/height of
    its own to fight with (the default UA <hr> is a 2px inset groove,
    wrong for this dark theme), just the one 1px top border, same
-   translucent-white weight borders use throughout this file. Margin is
-   20px top and bottom -- there's no margin of its own beneath that to
-   add the "additional 20px" on top of, so 20px is the whole of it. */
+   translucent-white weight borders use throughout this file. */
 .section-divider {
   height: 0;
-  margin: 20px 0;
+  margin: 40px 0;
   border: none;
   border-top: 1px solid rgba(255, 255, 255, 0.12);
 }
@@ -162,6 +160,21 @@ a {
    BROWSE GALLERY reuses .hero-cta too but never carries [hidden]. */
 .hero-cta[hidden] {
   display: none;
+}
+
+/* Swaps places with .hero-cta above once .start-panel opens (see
+   app.js) -- same margin-top so it lands exactly where the button was,
+   no default h2 margin of its own to override otherwise. No [hidden]
+   override needed: unlike .hero-cta, nothing here sets its own
+   `display`, so the browser's own [hidden]{display:none} already wins
+   outright. */
+.start-fractalizing-header {
+  margin: 28px 0 0;
+  font-size: 1.3rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #fff;
 }
 
 /* Fixed regardless of body's own side padding (position: fixed sizes
