@@ -98,18 +98,20 @@
 
   // --- "Start fractalizing" panel -------------------------------------
   // The page's own live-audio entry point (see index.html) -- resolve
-  // live audio first, then launch straight into a fractal on a random
-  // curated photo, rather than browsing to one. Its panel is wired via
-  // the exact same wireLiveAudioControls the fractal/visualizer's own
+  // live audio first, then reveal a "PICK YOUR IMAGE" step rather than
+  // landing straight on a random photo. Its panel is wired via the
+  // exact same wireLiveAudioControls the fractal/visualizer's own
   // settings panels use internally (same shared microphone stream), and
   // syncLiveAudioPanel on open reflects an already-granted stream from
   // one of THOSE immediately, rather than only after this one's own
   // button is clicked. Inline disclosure, not a popup -- .hero-cta just toggles
-  // it open/closed in place (clicking it again, or either of the
-  // panel's own two buttons, is how it closes -- no separate close
-  // control).
+  // it open/closed in place (clicking it again, or the panel's own
+  // "Use Without Live Audio" button, is how it closes -- no separate
+  // close control).
   const startBtn = document.querySelector("[data-start-fractalizing]");
   const startPanel = document.querySelector("[data-start-panel]");
+  const pickImageBtn = document.querySelector("[data-pick-image]");
+  const photoCollection = document.querySelector("[data-photo-collection]");
   if (startBtn && startPanel) {
     const startPanelLiveAudioBtn = document.querySelector("[data-start-panel-live-audio-btn]");
     const startPanelSkipBtn = document.querySelector("[data-start-panel-skip]");
@@ -137,9 +139,6 @@
         group.photos.forEach((photo) => pool.push(photo));
       });
       if (!pool.length) return;
-      // Picking a specific photo (vs. just landing on the page's own
-      // upload/catalog section) is a placeholder for this first pass --
-      // an explicit "pick one" step may replace this later.
       const photo = pool[Math.floor(Math.random() * pool.length)];
       window.FractalizeCore.openFractal(photo.src);
     }
@@ -176,8 +175,16 @@
 
     startPanelLiveAudioBtn.addEventListener("click", () => {
       if (liveAudioActive) {
-        closeStartPanel();
-        launchRandomFractal();
+        // Live audio is ready -- rather than launching a random photo
+        // (the old placeholder behavior), reveal the real next step.
+        // "Use Without Live Audio" stays put, just restyled down to a
+        // link (same click behavior) now that it reads as a lesser,
+        // skip-this-step option next to it rather than an equal choice.
+        // Neither of these resets when the panel closes -- once
+        // reached, this counts as session progress, same as
+        // .photo-collection itself never re-hiding once shown.
+        startPanelSkipBtn.classList.add("is-link");
+        if (pickImageBtn) pickImageBtn.hidden = false;
         return;
       }
       // Drives the same hidden checkbox wireLiveAudioControls is
@@ -191,6 +198,21 @@
       closeStartPanel();
       launchRandomFractal();
     });
+
+    if (pickImageBtn && photoCollection) {
+      pickImageBtn.addEventListener("click", () => {
+        photoCollection.hidden = false;
+        closeStartPanel();
+        // Deferred a frame for the same reason openStartPanel's own
+        // scroll is -- lets the reflow from unhiding settle first.
+        // block:'start' here, not 'nearest': unlike that scroll, the
+        // point IS to move attention well down the page, to a section
+        // that's currently entirely offscreen.
+        requestAnimationFrame(() => {
+          photoCollection.scrollIntoView({ behavior: "smooth", block: "start" });
+        });
+      });
+    }
   }
 
   // --- Curated photo grid -------------------------------------------

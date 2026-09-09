@@ -50,8 +50,9 @@
     <!-- The only live-audio entry point on this page now (an earlier
          always-visible checkbox card lower down was removed once this
          covered the same ground in a more guided way) -- resolve live
-         audio FIRST, then land straight in a fractal, instead of
-         browsing straight to a photo. -->
+         audio FIRST, then pick a photo (see [data-pick-image]/
+         .photo-collection below, both hidden until this flow reveals
+         them), instead of browsing straight to one. -->
     <button type="button" class="hero-cta" data-start-fractalizing aria-expanded="false" aria-controls="start-panel">START FRACTALIZING</button>
   </header>
 
@@ -86,33 +87,47 @@
       <button type="button" class="action-btn action-btn-secondary start-panel-skip-btn" data-start-panel-skip>Use Without Live Audio</button>
     </section>
 
-    <!-- The page's one upload entry point now that its own "+" tile
-         (first item in the row) replaces the old standalone dropzone --
-         always visible, not just once there's an upload. The rest is
-         populated from IndexedDB (see app.js) with whatever's been
-         saved on a previous visit, on this device/browser only. -->
-    <section class="uploads-catalog" data-uploads-catalog>
-      <h2 class="catalog-heading">Your Uploads</h2>
-      <div class="catalog-row" data-uploads-row>
-        <label class="catalog-thumb catalog-add-thumb" for="uploads-add-input" aria-label="Add photos">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="28px" height="28px" fill="#e3e3e3">
-            <path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"/>
-          </svg>
-          <input type="file" id="uploads-add-input" accept="image/*" multiple data-uploads-add-input hidden>
-        </label>
-      </div>
-    </section>
+    <!-- Hidden until the live-audio button above is actually clicked
+         (see app.js) -- revealing this instead of launching straight
+         into a random fractal is what replaces that old placeholder
+         behavior: once live audio's ready, the next step is picking a
+         specific photo, not a random one. -->
+    <button type="button" class="hero-cta" data-pick-image hidden>PICK YOUR IMAGE</button>
 
-    <section class="catalog">
-      <h2 class="catalog-heading">Tuko's Photography</h2>
-      <div class="catalog-groups" data-catalog-groups></div>
-    </section>
+    <!-- Hidden until [data-pick-image] above is clicked (see app.js) --
+         browsing straight to a photo is a second, more deliberate path
+         alongside the guided .start-panel flow above, not the page's
+         first thing anymore. -->
+    <div class="photo-collection" data-photo-collection hidden>
+      <!-- The page's one upload entry point now that its own "+" tile
+           (first item in the row) replaces the old standalone dropzone
+           -- always visible once this wrapper is, not just once
+           there's an upload. The rest is populated from IndexedDB (see
+           app.js) with whatever's been saved on a previous visit, on
+           this device/browser only. -->
+      <section class="uploads-catalog" data-uploads-catalog>
+        <h2 class="catalog-heading">Your Uploads</h2>
+        <div class="catalog-row" data-uploads-row>
+          <label class="catalog-thumb catalog-add-thumb" for="uploads-add-input" aria-label="Add photos">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="28px" height="28px" fill="#e3e3e3">
+              <path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"/>
+            </svg>
+            <input type="file" id="uploads-add-input" accept="image/*" multiple data-uploads-add-input hidden>
+          </label>
+        </div>
+      </section>
 
-    <!-- Placeholder -- not wired to anything yet. Same shape as
-         .hero-cta, secondary colors (reuses .action-btn-secondary,
-         same composition pattern as a curated thumb's own two actions)
-         since this isn't the page's primary action. -->
-    <button type="button" class="hero-cta action-btn-secondary" data-browse-gallery>BROWSE GALLERY</button>
+      <section class="catalog">
+        <h2 class="catalog-heading">Tuko's Photography</h2>
+        <div class="catalog-groups" data-catalog-groups></div>
+      </section>
+
+      <!-- Placeholder -- not wired to anything yet. Same shape as
+           .hero-cta, secondary colors (reuses .action-btn-secondary,
+           same composition pattern as a curated thumb's own two actions)
+           since this isn't the page's primary action. -->
+      <button type="button" class="hero-cta action-btn-secondary" data-browse-gallery>BROWSE GALLERY</button>
+    </div>
   </main>
 
   <footer class="site-footer">

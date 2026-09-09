@@ -137,6 +137,15 @@ a {
   transform: scale(0.97);
 }
 
+/* display:block above otherwise beats the browser's own default
+   [hidden]{display:none} UA rule at equal specificity -- re-assert it
+   explicitly. Only reachable in practice via [data-pick-image] (see
+   index.html/app.js), which starts hidden and is toggled by script;
+   BROWSE GALLERY reuses .hero-cta too but never carries [hidden]. */
+.hero-cta[hidden] {
+  display: none;
+}
+
 /* Fixed regardless of body's own side padding (position: fixed sizes
    against the viewport, not an ancestor's padding box) -- hidden by
    default and toggled by app.js's IntersectionObserver on .hero-logo,
@@ -389,6 +398,30 @@ main {
 
 .start-panel-skip-btn {
   margin-top: 20px;
+}
+
+/* Added once "Start Live Audio Input" is actually clicked (see app.js)
+   -- .action-btn/.action-btn-secondary's own pill styling no longer
+   fits once [data-pick-image] appears as the panel's real next step;
+   this keeps the same button (same text, same click behavior) but
+   reads as a lesser, skip-this-step option instead of an equal-weight
+   choice. Higher specificity than .action-btn-secondary above wins
+   regardless of source order, so no !important needed. */
+.start-panel-skip-btn.is-link {
+  appearance: none;
+  -webkit-appearance: none;
+  background: none;
+  border: none;
+  padding: 0;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.start-panel-skip-btn.is-link:hover {
+  background: none;
+  color: #fff;
 }
 
 /* --- Footer ----------------------------------------------------------- */
