@@ -155,31 +155,73 @@ a {
 
 /* display:block above otherwise beats the browser's own default
    [hidden]{display:none} UA rule at equal specificity -- re-assert it
-   explicitly. Only reachable in practice via [data-pick-image] (see
-   index.html/app.js), which starts hidden and is toggled by script;
-   BROWSE GALLERY reuses .hero-cta too but never carries [hidden]. */
+   explicitly. Reachable via [data-start-fractalizing] itself (see
+   index.html/app.js), toggled by script; BROWSE GALLERY reuses
+   .hero-cta too but never carries [hidden]. */
 .hero-cta[hidden] {
   display: none;
 }
 
 /* Swaps places with .hero-cta above once .start-panel opens (see
-   app.js) -- same margin-top so it lands exactly where the button was,
-   no default h2 margin of its own to override otherwise. No [hidden]
-   override needed: unlike .hero-cta, nothing here sets its own
-   `display`, so the browser's own [hidden]{display:none} already wins
-   outright. scroll-margin-top matches .sticky-nav's own rendered
+   app.js) -- margin-top 40px more than the button's own (68px vs
+   28px), margin-bottom half what the gap below used to be (this used
+   to just be .hero's own 48px bottom padding; 24px here now, the rest
+   of that 48px still applies after .start-fractalizing-step below).
+   Left-aligned, unlike everything else in this centered hero. No
+   [hidden] override needed: unlike .hero-cta, nothing here sets its
+   own `display`, so the browser's own [hidden]{display:none} already
+   wins outright. scroll-margin-top matches .sticky-nav's own rendered
    height (~57px, rounded up) -- app.js's scrollIntoView({block:'start'})
    would otherwise land this flush with the true viewport top, right
    under that fixed bar (which is already visible by the time a scroll
    this size finishes, since .hero-logo above is long since scrolled
    out of view), hiding the very header it just scrolled to reveal. */
 .start-fractalizing-header {
-  margin: 28px 0 0;
+  margin: 68px 0 24px;
+  text-align: left;
   scroll-margin-top: 72px;
   font-size: 1.3rem;
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
+  color: #fff;
+}
+
+/* The first of this flow's two step markers (➁ sits with
+   .pick-image-row further down) -- shown/hidden together with the
+   header above (see app.js), left-aligned to match it. */
+.start-fractalizing-step {
+  margin: 0;
+  text-align: left;
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+/* PICK YOUR IMAGE's own row, with its ➁ step marker -- left-aligned
+   (unlike .hero-cta's own margin:auto centering, overridden below) and
+   the two vertically centered against each other. display:flex above
+   the default UA [hidden] rule at equal specificity needs the same
+   explicit re-assertion .upload-preview-row etc. already use elsewhere
+   in this file. */
+.pick-image-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 28px 0 0;
+}
+
+.pick-image-row[hidden] {
+  display: none;
+}
+
+.pick-image-row .hero-cta {
+  margin: 0;
+}
+
+.step-marker {
+  flex-shrink: 0;
+  font-size: 1.3rem;
+  font-weight: 700;
   color: #fff;
 }
 

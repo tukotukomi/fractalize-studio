@@ -67,6 +67,10 @@
          its place instead. -->
     <button type="button" class="hero-cta" data-start-fractalizing aria-expanded="false" aria-controls="start-panel">START FRACTALIZING</button>
     <h2 class="start-fractalizing-header" data-start-fractalizing-header hidden>FRACTALIZE SETUP</h2>
+    <!-- Shown/hidden together with the header above (see app.js) -- the
+         first of two step markers in this flow, the second (➁) sits
+         next to PICK YOUR IMAGE further down once that's revealed. -->
+    <p class="start-fractalizing-step" data-start-fractalizing-step hidden>➀ Check audio settings</p>
   </header>
 
   <main>
@@ -105,8 +109,13 @@
          or not, rather than waiting for permission to actually be
          granted. Revealing this instead of launching straight into a
          random fractal is what replaces that old placeholder behavior:
-         the next step is picking a specific photo, not a random one. -->
-    <button type="button" class="hero-cta" data-pick-image hidden>PICK YOUR IMAGE</button>
+         the next step is picking a specific photo, not a random one.
+         The row (not the button itself) is what app.js shows/hides --
+         ➁ is this flow's second step marker, alongside ➀ above. -->
+    <div class="pick-image-row" data-pick-image-row hidden>
+      <span class="step-marker" aria-hidden="true">➁</span>
+      <button type="button" class="hero-cta" data-pick-image>PICK YOUR IMAGE</button>
+    </div>
 
     <!-- Hidden until [data-pick-image] above is clicked (see app.js) --
          browsing straight to a photo is a second, more deliberate path

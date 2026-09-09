@@ -111,6 +111,8 @@
   const startBtn = document.querySelector("[data-start-fractalizing]");
   const startPanel = document.querySelector("[data-start-panel]");
   const startFractalizingHeader = document.querySelector("[data-start-fractalizing-header]");
+  const startFractalizingStep = document.querySelector("[data-start-fractalizing-step]");
+  const pickImageRow = document.querySelector("[data-pick-image-row]");
   const pickImageBtn = document.querySelector("[data-pick-image]");
   const photoCollection = document.querySelector("[data-photo-collection]");
   if (startBtn && startPanel) {
@@ -152,6 +154,7 @@
       // above [data-start-fractalizing] in index.html.
       startBtn.hidden = true;
       if (startFractalizingHeader) startFractalizingHeader.hidden = false;
+      if (startFractalizingStep) startFractalizingStep.hidden = false;
       window.FractalizeCore.syncLiveAudioPanel(startPanelLiveAudioPanel);
       // Deferred a frame so the reflow from the hidden/shown swap above
       // settles first -- scrolling on the same tick can run against a
@@ -173,6 +176,7 @@
       startBtn.setAttribute("aria-expanded", "false");
       startBtn.hidden = false;
       if (startFractalizingHeader) startFractalizingHeader.hidden = true;
+      if (startFractalizingStep) startFractalizingStep.hidden = true;
     }
 
     startBtn.addEventListener("click", () => {
@@ -191,7 +195,7 @@
       // closes -- once reached, this counts as session progress, same
       // as .photo-collection itself never re-hiding once shown.
       startPanelSkipBtn.classList.add("is-link");
-      if (pickImageBtn) pickImageBtn.hidden = false;
+      if (pickImageRow) pickImageRow.hidden = false;
       if (liveAudioActive) return;
       // Drives the same hidden checkbox wireLiveAudioControls is
       // listening on above -- if the visitor still needs to grant
