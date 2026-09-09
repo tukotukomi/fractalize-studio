@@ -595,12 +595,20 @@ main {
 /* Shown in .start-panel's own place once PICK YOUR IMAGE is actually
    clicked (see app.js's closeStartPanel, which hides the panel
    entirely at that point) -- a duplicate of the panel's own live-audio
-   button, standalone rather than inside that panel's card. Sized/
-   centered like every other .hero-cta on this page (its own default
-   28px-top/0-bottom margin doesn't apply here -- overridden to keep
-   ➀/➁ from ending up far apart with this in between). */
+   button, standalone rather than inside that panel's card. Full width
+   (unlike every other auto-width .hero-cta) so the waveform canvas
+   below has real room to read. Margin is 8px's own value further cut
+   by 80% (1.6px) -- was already the minimal gap keeping ➀/➁ from
+   ending up far apart with this in between; this pulls them closer
+   still. position/overflow here (not on .hero-cta generally) are for
+   the waveform canvas below: relative gives it something to anchor
+   against, hidden clips it to this button's own pill shape instead of
+   letting it show square corners underneath. */
 [data-live-audio-confirm] {
-  margin: 8px auto;
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  margin: 1.6px 0;
 }
 
 /* Same green "already on" look .start-panel-live-audio-btn.is-active
@@ -613,6 +621,36 @@ main {
 
 [data-live-audio-confirm].is-active:hover {
   background: #00b846;
+}
+
+/* The live waveform meter, drawn directly onto this button (see its
+   own [data-audio-waveform] hook and comment in index.html) rather
+   than sitting in a card above/below it. Absolutely positioned to
+   cover the button's full padding box -- position:absolute here lands
+   it above the button's own in-flow text in paint order regardless of
+   DOM order (a positioned box with z-index:auto always paints above
+   in-flow content within the same stacking context), so the label
+   below still needs its own z-index to reliably win back the top
+   layer. Faded down so the trace reads as texture behind the text,
+   not competing with it; pointer-events:none so it never intercepts
+   the button's own click. */
+[data-live-audio-confirm] .fractal-audio-waveform {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+/* Wins back the top layer over the waveform canvas above -- a
+   positioned descendant with z-index:auto/0 always paints above
+   in-flow content in the same stacking context, so without this the
+   canvas (itself positioned) would cover the text even though it
+   comes first in the DOM. */
+[data-live-audio-confirm-label] {
+  position: relative;
+  z-index: 1;
 }
 
 /* --- Footer ----------------------------------------------------------- */

@@ -117,6 +117,7 @@
   const pickImageRow = document.querySelector("[data-pick-image-row]");
   const pickImageMarker = document.querySelector("[data-pick-image-marker]");
   const liveAudioConfirm = document.querySelector("[data-live-audio-confirm]");
+  const liveAudioConfirmLabel = document.querySelector("[data-live-audio-confirm-label]");
   const photoCollection = document.querySelector("[data-photo-collection]");
   const stepConnector = document.querySelector("[data-step-connector]");
 
@@ -249,9 +250,12 @@
         // instead of nothing, a standalone duplicate of the panel's own
         // live-audio button (copied over once here, not kept
         // live-synced afterward -- see its own comment in index.html).
+        // Sets the label span's own text, not the button's textContent
+        // directly -- the button also has a waveform canvas sibling
+        // now (see index.html), which textContent would silently wipe.
         startPanel.hidden = true;
         if (liveAudioConfirm) {
-          liveAudioConfirm.textContent = startPanelLiveAudioBtn.textContent;
+          if (liveAudioConfirmLabel) liveAudioConfirmLabel.textContent = startPanelLiveAudioBtn.textContent;
           liveAudioConfirm.classList.toggle("is-active", liveAudioActive);
           liveAudioConfirm.hidden = false;
         }

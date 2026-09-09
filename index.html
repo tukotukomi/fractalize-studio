@@ -13,7 +13,7 @@
        commit hash right before each commit that touches either file,
        so it's always one commit behind true HEAD. Worth revisiting
        once this page is more stable and shipping less often. -->
-  <link rel="stylesheet" href="styles.css?v=7813e4a">
+  <link rel="stylesheet" href="styles.css?v=6fbc600">
   <link rel="stylesheet" href="fractalize-core/fractalize-core.css?v=fa60569">
 </head>
 <body>
@@ -127,8 +127,22 @@
          over once at that point, not kept live-synced afterward,
          since the flow's effectively locked in by then) rather than
          extracting the original out of its own card. Minimal margin
-         (see styles.css) so ➀/➁ don't end up far apart. -->
-    <button type="button" class="hero-cta" data-live-audio-confirm hidden>Use Live Audio Input</button>
+         (see styles.css) so ➀/➁ don't end up far apart.
+         The canvas is the SAME [data-audio-waveform] hook every other
+         waveform meter on the page uses -- fractalize-core.js's shared
+         drawWaveforms loop discovers it automatically (it re-queries
+         document.querySelectorAll every frame) and draws to it
+         whenever live audio is actually active, with no wiring needed
+         here. It only ever renders something when this button is
+         already green (is-active), since that's the only case the
+         loop is running by the time this button is reachable. Text
+         moved into its own span since app.js can no longer just set
+         the button's textContent directly -- that would wipe out the
+         canvas as a sibling. -->
+    <button type="button" class="hero-cta" data-live-audio-confirm hidden>
+      <canvas class="fractal-audio-waveform" data-audio-waveform width="200" height="58" aria-hidden="true"></canvas>
+      <span data-live-audio-confirm-label>Use Live Audio Input</span>
+    </button>
 
     <!-- Shown/hidden together with the header/➀ above (see app.js) --
          underneath .start-panel, right from START FRACTALIZING itself,
@@ -193,6 +207,6 @@
 
   <script src="photo-catalog.js"></script>
   <script src="fractalize-core/fractalize-core.js?v=fa60569"></script>
-  <script src="app.js?v=7813e4a"></script>
+  <script src="app.js?v=6fbc600"></script>
 </body>
 </html>
