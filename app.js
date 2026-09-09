@@ -174,19 +174,18 @@
     });
 
     startPanelLiveAudioBtn.addEventListener("click", () => {
-      if (liveAudioActive) {
-        // Live audio is ready -- rather than launching a random photo
-        // (the old placeholder behavior), reveal the real next step.
-        // "Use Without Live Audio" stays put, just restyled down to a
-        // link (same click behavior) now that it reads as a lesser,
-        // skip-this-step option next to it rather than an equal choice.
-        // Neither of these resets when the panel closes -- once
-        // reached, this counts as session progress, same as
-        // .photo-collection itself never re-hiding once shown.
-        startPanelSkipBtn.classList.add("is-link");
-        if (pickImageBtn) pickImageBtn.hidden = false;
-        return;
-      }
+      // Reveals the real next step right on this click -- whether it's
+      // requesting permission for the first time or, once already
+      // granted, proceeding -- rather than waiting for a grant to
+      // actually land first. "Use Without Live Audio" stays put, just
+      // restyled down to a link (same click behavior) now that it
+      // reads as a lesser, skip-this-step option next to it rather than
+      // an equal choice. Neither of these resets when the panel
+      // closes -- once reached, this counts as session progress, same
+      // as .photo-collection itself never re-hiding once shown.
+      startPanelSkipBtn.classList.add("is-link");
+      if (pickImageBtn) pickImageBtn.hidden = false;
+      if (liveAudioActive) return;
       // Drives the same hidden checkbox wireLiveAudioControls is
       // listening on above -- if the visitor still needs to grant
       // permission, this is what triggers that browser dialog.

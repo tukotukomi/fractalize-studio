@@ -47,6 +47,13 @@
       <source src="hero-banner.mp4" type="video/mp4">
     </video>
     <p class="hero-tagline">Turn any photo into a living, music-reactive fractal.</p>
+    <!-- Always visible, above START FRACTALIZING -- unlike that flow,
+         this isn't gated behind anything (not wired to anything yet
+         either). Same shape as .hero-cta, secondary colors (reuses
+         .action-btn-secondary, same composition pattern as a curated
+         thumb's own two actions) since this isn't the page's primary
+         action. -->
+    <button type="button" class="hero-cta action-btn-secondary" data-browse-gallery>BROWSE GALLERY</button>
     <!-- The only live-audio entry point on this page now (an earlier
          always-visible checkbox card lower down was removed once this
          covered the same ground in a more guided way) -- resolve live
@@ -87,11 +94,12 @@
       <button type="button" class="action-btn action-btn-secondary start-panel-skip-btn" data-start-panel-skip>Use Without Live Audio</button>
     </section>
 
-    <!-- Hidden until the live-audio button above is actually clicked
-         (see app.js) -- revealing this instead of launching straight
-         into a random fractal is what replaces that old placeholder
-         behavior: once live audio's ready, the next step is picking a
-         specific photo, not a random one. -->
+    <!-- Hidden until the live-audio button above is first clicked (see
+         app.js) -- revealed right on that click, requesting permission
+         or not, rather than waiting for permission to actually be
+         granted. Revealing this instead of launching straight into a
+         random fractal is what replaces that old placeholder behavior:
+         the next step is picking a specific photo, not a random one. -->
     <button type="button" class="hero-cta" data-pick-image hidden>PICK YOUR IMAGE</button>
 
     <!-- Hidden until [data-pick-image] above is clicked (see app.js) --
@@ -121,12 +129,6 @@
         <h2 class="catalog-heading">Tuko's Photography</h2>
         <div class="catalog-groups" data-catalog-groups></div>
       </section>
-
-      <!-- Placeholder -- not wired to anything yet. Same shape as
-           .hero-cta, secondary colors (reuses .action-btn-secondary,
-           same composition pattern as a curated thumb's own two actions)
-           since this isn't the page's primary action. -->
-      <button type="button" class="hero-cta action-btn-secondary" data-browse-gallery>BROWSE GALLERY</button>
     </div>
   </main>
 
