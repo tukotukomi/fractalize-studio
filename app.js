@@ -179,7 +179,7 @@
     // real, granted browser permission state, not just "was clicked".
     // Drives the button's two-stage label/color: "Use Live Audio
     // Input" (not yet active, clicking requests it) vs "Live Audio In
-    // Use" in the positive-state color, #5f7a7a (already active,
+    // Use" in the positive-state color, #eee8ae (already active,
     // clicking proceeds -- see .start-panel-live-audio-btn.is-active
     // in styles.css).
     let liveAudioActive = false;
@@ -271,11 +271,18 @@
       if (startFractalizingHeader) startFractalizingHeader.hidden = true;
       if (startFractalizingStep) {
         startFractalizingStep.hidden = true;
-        startFractalizingStep.classList.remove("is-current");
+        startFractalizingStep.classList.remove("is-current", "is-complete");
       }
       if (pickImageStep) pickImageStep.hidden = true;
       if (pickImageRow) pickImageRow.hidden = true;
-      if (pickImageMarker) pickImageMarker.classList.remove("is-current");
+      if (pickImageMarker) {
+        pickImageMarker.classList.remove("is-current");
+        // Undoes the PICK YOUR IMAGE click handler's own swap (see
+        // below) -- back to the bare, aria-hidden marker for the next
+        // time this flow is reopened.
+        pickImageMarker.textContent = "➁";
+        pickImageMarker.setAttribute("aria-hidden", "true");
+      }
       if (pickImageBtn) pickImageBtn.classList.remove("is-done");
       if (stepConnector) stepConnector.hidden = true;
     }
@@ -331,9 +338,23 @@
         pickImageBtn.classList.add("is-done");
         // ➀ hands "in progress" off to ➁ right here -- not any earlier
         // in this flow (see the live-audio click handler above) -- now
-        // that a photo is actually being picked.
-        if (startFractalizingStep) startFractalizingStep.classList.remove("is-current");
-        if (pickImageMarker) pickImageMarker.classList.add("is-current");
+        // that a photo is actually being picked. is-complete (not just
+        // losing is-current) marks it done, in the same positive-state
+        // color the live-audio buttons use.
+        if (startFractalizingStep) {
+          startFractalizingStep.classList.remove("is-current");
+          startFractalizingStep.classList.add("is-complete");
+        }
+        if (pickImageMarker) {
+          pickImageMarker.classList.add("is-current");
+          // Was just a bare "➁" alongside the button (aria-hidden,
+          // since the button's own label already read as this step's
+          // real content) -- now the button's gone (.is-done below),
+          // so this needs its own full text, same as ➀'s permanent
+          // record above.
+          pickImageMarker.textContent = "➁ Pick an image";
+          pickImageMarker.removeAttribute("aria-hidden");
+        }
         // Deferred a frame for the same reason openStartPanel's own
         // scroll is -- lets the reflow from unhiding/hiding settle
         // first (the step-connector needs that same settled layout to

@@ -222,6 +222,14 @@ a {
   color: #fff;
 }
 
+/* Added to ➀ once PICK YOUR IMAGE is clicked (see app.js), right
+   alongside .is-current handing off to ➁ -- marks step 1 as actually
+   finished, not just no-longer-current, in the same positive-state
+   color the live-audio buttons use for their own "done" fill. */
+.start-fractalizing-step.is-complete {
+  color: #eee8ae;
+}
+
 /* Replaces [data-pick-image-step]'s full "➁ Pick your image" line once
    "Use Live Audio Input" is clicked (see app.js) -- the marker (reusing
    .start-fractalizing-step above, so .is-current applies here the same
@@ -546,14 +554,14 @@ main {
    stays #111, the same weight the white default already relies on for
    contrast. */
 .start-panel-live-audio-btn.is-active {
-  background: #5f7a7a;
-  border-color: #5f7a7a;
+  background: #eee8ae;
+  border-color: #eee8ae;
 }
 
 /* ~12% darker than the fill above -- same ratio the color this
    replaced used for its own hover state. */
 .start-panel-live-audio-btn.is-active:hover {
-  background: #546b6b;
+  background: #d1cc99;
 }
 
 /* The two instruction lines sit between the two buttons rather than
@@ -620,14 +628,14 @@ main {
    uses, duplicated here rather than shared -- this button isn't a
    .start-panel-live-audio-btn, so that selector doesn't reach it. */
 [data-live-audio-confirm].is-active {
-  background: #5f7a7a;
-  border-color: #5f7a7a;
+  background: #eee8ae;
+  border-color: #eee8ae;
 }
 
 /* ~12% darker than the fill above -- same ratio the color this
    replaced used for its own hover state. */
 [data-live-audio-confirm].is-active:hover {
-  background: #546b6b;
+  background: #d1cc99;
 }
 
 /* The live waveform meter, drawn directly onto this button (see its
@@ -668,7 +676,7 @@ main {
    so the moving line never cuts through the letters themselves --
    everywhere else on the button the trace still shows through. */
 [data-live-audio-confirm].is-active [data-live-audio-confirm-label] {
-  background: #5f7a7a;
+  background: #eee8ae;
 }
 
 /* --- Footer ----------------------------------------------------------- */
