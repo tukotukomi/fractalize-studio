@@ -167,9 +167,15 @@ a {
    no default h2 margin of its own to override otherwise. No [hidden]
    override needed: unlike .hero-cta, nothing here sets its own
    `display`, so the browser's own [hidden]{display:none} already wins
-   outright. */
+   outright. scroll-margin-top matches .sticky-nav's own rendered
+   height (~57px, rounded up) -- app.js's scrollIntoView({block:'start'})
+   would otherwise land this flush with the true viewport top, right
+   under that fixed bar (which is already visible by the time a scroll
+   this size finishes, since .hero-logo above is long since scrolled
+   out of view), hiding the very header it just scrolled to reveal. */
 .start-fractalizing-header {
   margin: 28px 0 0;
+  scroll-margin-top: 72px;
   font-size: 1.3rem;
   font-weight: 700;
   letter-spacing: 0.04em;
