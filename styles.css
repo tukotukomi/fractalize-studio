@@ -114,6 +114,19 @@ a {
   color: rgba(255, 255, 255, 0.65);
 }
 
+/* A plain <hr> reset to a single thin line -- no border-style/height of
+   its own to fight with (the default UA <hr> is a 2px inset groove,
+   wrong for this dark theme), just the one 1px top border, same
+   translucent-white weight borders use throughout this file. Margin is
+   20px top and bottom -- there's no margin of its own beneath that to
+   add the "additional 20px" on top of, so 20px is the whole of it. */
+.section-divider {
+  height: 0;
+  margin: 20px 0;
+  border: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
 /* Same pill shape/color as .action-btn (see below), just bigger --
    this is the hero's own primary call to action, not one of two
    equal-weight choices the way the upload card's pair are. */
