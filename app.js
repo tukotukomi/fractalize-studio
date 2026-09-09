@@ -1,28 +1,30 @@
 (function () {
-  // Gives the engine's own internal camera-roll panel (reachable once
-  // inside the fractal) the same photos this page's own grids show
-  // below -- both the curated catalog (window.FRACTALIZE_CATALOG) AND,
-  // once loaded, this visitor's own persisted uploads (see the
+  // Gives the engine's own internal camera-roll grid (reachable once
+  // inside the fractal) and its own "Your Uploads" section (reachable
+  // once inside the visualizer) the same photos this page's own grids
+  // show below -- both the curated catalog (window.FRACTALIZE_CATALOG)
+  // AND, once loaded, this visitor's own persisted uploads (see the
   // "Persisted uploads" section further down), as a second "Your
-  // Uploads" group, so an uploaded photo can be queued/shuffled from
-  // inside the fractal the exact same way a curated one can. Called
-  // again every time the uploads list changes (new upload, delete) --
-  // setPhotoCatalog itself invalidates the camera roll's own "build
-  // once" grid cache when that happens, so the next time it's opened
+  // Uploads" group, so an uploaded photo can be queued/shuffled/shown
+  // from inside either overlay the exact same way a curated one can.
+  // Always unshifted first, even with zero uploads yet -- mirrors this
+  // page's own persistent .uploads-catalog section (see index.html),
+  // and both of fractalize-core's own "Your Uploads" spots treat
+  // whichever group is first as the one to add its own "+" tile to
+  // (see setUploadHandler's own comment there), so this group's
+  // position here is exactly what keeps that lined up. Called again
+  // every time the uploads list changes (new upload, delete) --
+  // setPhotoCatalog itself invalidates both overlays' own "build once"
+  // caches when that happens, so the next time either is opened
   // reflects the change rather than a stale snapshot from the first
   // open.
   let uploadedPhotoRecords = []; // [{id, url}], kept in sync with IndexedDB below
   function rebuildFullCatalog() {
     const groups = (window.FRACTALIZE_CATALOG || []).slice();
-    if (uploadedPhotoRecords.length) {
-      // Unshifted, not pushed -- mirrors this page's own layout, where
-      // "Your Uploads" sits above the curated "Tuko's Photography"
-      // catalog (see index.html), not below it.
-      groups.unshift({
-        label: "Your Uploads",
-        photos: uploadedPhotoRecords.map((r) => ({ src: r.url, thumbSrc: r.url })),
-      });
-    }
+    groups.unshift({
+      label: "Your Uploads",
+      photos: uploadedPhotoRecords.map((r) => ({ src: r.url, thumbSrc: r.url })),
+    });
     window.FractalizeCore.setPhotoCatalog(groups);
   }
   rebuildFullCatalog();
@@ -369,11 +371,12 @@
   }
 
   // Saves any number of image files to IndexedDB and adds a thumb for
-  // each, right after the row's permanent add-tile -- shared by both
-  // upload entry points below (the dropzone and the add-tile's own
-  // file input). Each save is independent, so completion order (and so
-  // thumb order among a batch) isn't guaranteed to match selection
-  // order -- not worth sequencing for what's a cosmetic detail.
+  // each, right after the row's permanent add-tile -- shared by every
+  // upload entry point on this page (the add-tile's own file input, and
+  // the "+" tile inside the fractal/visualizer, wired below). Each save
+  // is independent, so completion order (and so thumb order among a
+  // batch) isn't guaranteed to match selection order -- not worth
+  // sequencing for what's a cosmetic detail.
   function saveFilesToUploads(fileList) {
     if (!uploadsSection || !uploadsRow || !addTile) return;
     const files = Array.prototype.filter.call(fileList || [], (f) => f && f.type.indexOf("image/") === 0);
@@ -384,9 +387,8 @@
           rebuildFullCatalog();
         })
         .catch(() => {
-          // Storage unavailable or quota exceeded -- this upload still
-          // works for the current session via the dropzone's own preview
-          // (single-file case), it just won't be there on a future visit.
+          // Storage unavailable or quota exceeded -- this upload just
+          // won't be there on a future visit.
         });
     });
   }
@@ -409,59 +411,4 @@
   // catalog refresh). Set once at load, well before a visitor could
   // ever open either overlay.
   window.FractalizeCore.setUploadHandler(saveFilesToUploads);
-
-  // --- Upload flow -----------------------------------------------------
-  // A blob: URL only lives as long as this page does, so it's opened
-  // with persistQueue:false (see fractalize-core's own README) --
-  // otherwise it would get written into the engine's persisted
-  // camera-roll queue and fail to reload on a future visit.
-  const dropzone = document.querySelector("[data-upload-dropzone]");
-  const fileInput = document.querySelector("[data-upload-input]");
-  const actionsRow = document.querySelector("[data-upload-actions]");
-  const previewImg = document.querySelector("[data-upload-preview]");
-  let uploadedUrl = null;
-
-  function handleFiles(fileList) {
-    const files = Array.prototype.filter.call(fileList || [], (f) => f && f.type.indexOf("image/") === 0);
-    if (!files.length) return;
-
-    // The dropzone's own preview + "Open as Fractal"/"Visualize to
-    // Music" row only makes sense for a single photo at a time -- with
-    // more than one selected, they're all still saved to Your Uploads
-    // below, where each one gets those same two actions individually.
-    if (files.length === 1) {
-      if (uploadedUrl) URL.revokeObjectURL(uploadedUrl);
-      uploadedUrl = URL.createObjectURL(files[0]);
-      previewImg.src = uploadedUrl;
-      actionsRow.hidden = false;
-    }
-
-    saveFilesToUploads(files);
-  }
-
-  fileInput.addEventListener("change", () => handleFiles(fileInput.files));
-
-  ["dragenter", "dragover"].forEach((evt) => {
-    dropzone.addEventListener(evt, (e) => {
-      e.preventDefault();
-      dropzone.classList.add("is-dragover");
-    });
-  });
-  ["dragleave", "dragend", "drop"].forEach((evt) => {
-    dropzone.addEventListener(evt, (e) => {
-      e.preventDefault();
-      dropzone.classList.remove("is-dragover");
-    });
-  });
-  dropzone.addEventListener("drop", (e) => {
-    const files = e.dataTransfer && e.dataTransfer.files;
-    if (files && files.length) handleFiles(files);
-  });
-
-  document.querySelector("[data-upload-fractal]").addEventListener("click", () => {
-    if (uploadedUrl) window.FractalizeCore.openFractal(uploadedUrl, { persistQueue: false });
-  });
-  document.querySelector("[data-upload-visualize]").addEventListener("click", () => {
-    if (uploadedUrl) window.FractalizeCore.openVisualizer(uploadedUrl);
-  });
 })();

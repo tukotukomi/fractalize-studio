@@ -194,71 +194,10 @@ main {
   margin: 0 auto 80px;
 }
 
-/* --- Upload card ---------------------------------------------------- */
-
-.upload-card {
-  margin-bottom: 64px;
-}
-
-.upload-dropzone {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  padding: 48px 24px;
-  border: 2px dashed rgba(255, 255, 255, 0.25);
-  border-radius: 20px;
-  background: rgba(255, 255, 255, 0.03);
-  cursor: pointer;
-  transition: border-color 0.2s ease, background-color 0.2s ease;
-}
-
-.upload-dropzone:hover,
-.upload-dropzone.is-dragover {
-  border-color: rgba(255, 255, 255, 0.6);
-  background: rgba(255, 255, 255, 0.06);
-}
-
-.upload-icon {
-  opacity: 0.8;
-}
-
-.upload-text {
-  font-size: 0.95rem;
-  color: rgba(255, 255, 255, 0.75);
-}
-
-.upload-preview-row {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  margin-top: 20px;
-  padding: 16px;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-/* Author-level `display: flex` above otherwise beats the browser's own
-   default `[hidden] { display: none }` UA rule at equal specificity --
-   re-assert it explicitly rather than relying on the attribute alone. */
-.upload-preview-row[hidden] {
-  display: none;
-}
-
-.upload-preview {
-  width: 72px;
-  height: 72px;
-  object-fit: cover;
-  border-radius: 10px;
-  flex-shrink: 0;
-}
-
-.upload-buttons {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
+/* --- Buttons ---------------------------------------------------------- */
+/* General-purpose pill buttons, not tied to any one section -- used by
+   .start-panel's own two buttons and BROWSE GALLERY (composed with
+   .hero-cta, see index.html) elsewhere in this file. */
 
 .action-btn {
   appearance: none;
@@ -297,9 +236,10 @@ main {
    verbatim (a grid of thumbnails is a grid of thumbnails, whether the
    src is a curated URL or a blob: URL from IndexedDB), plus its own
    .catalog-add-thumb (also below) for the row's first, permanent "add
-   photos" tile -- only its own bottom margin needed, matching
-   .upload-card's, to keep the same rhythm of spacing before the
-   curated catalog starts. */
+   photos" tile -- this page's one upload entry point now (see
+   index.html). Only its own bottom margin needed, matching .catalog's,
+   to keep the same rhythm of spacing before the curated catalog
+   starts. */
 .uploads-catalog {
   margin-bottom: 64px;
 }
@@ -384,12 +324,11 @@ main {
 }
 
 /* .catalog-thumb above gives this its size/shape (aspect-ratio, radius,
-   overflow) -- these override its plain-fill look with the same dashed
-   "empty dropzone" treatment .upload-dropzone uses, just square instead
-   of the dropzone's own tall rectangle. Always the row's first tile
-   (see index.html), a <label> wrapping its own hidden file input
-   (accept multiple) so clicking it opens the file picker with no JS
-   wiring needed for that part. */
+   overflow) -- these override its plain-fill look with a dashed "empty
+   dropzone" treatment instead. Always the row's first tile (see
+   index.html), a <label> wrapping its own hidden file input (accept
+   multiple) so clicking it opens the file picker with no JS wiring
+   needed for that part. */
 .catalog-add-thumb {
   display: flex;
   align-items: center;
@@ -411,12 +350,12 @@ main {
 
 /* --- "Start fractalizing" panel ----------------------------------------- */
 /* An inline disclosure, not a popup -- toggled open by .hero-cta, sits
-   right above .upload-card in the page's own flow (see index.html). No
-   width override of its own, same as .upload-card/.catalog below -- a
-   plain child of main, full width. The same faint-fill card treatment
-   an earlier always-visible live-audio checkbox card used, just
-   because it reads well here too, not because this is layered above
-   anything (no position/z-index needed either). */
+   right above .uploads-catalog in the page's own flow (see index.html).
+   No width override of its own, same as .uploads-catalog/.catalog
+   below -- a plain child of main, full width. The same faint-fill card
+   treatment an earlier always-visible live-audio checkbox card used,
+   just because it reads well here too, not because this is layered
+   above anything (no position/z-index needed either). */
 .start-panel {
   margin: 24px 0 32px;
   padding: 20px 24px;
@@ -466,10 +405,5 @@ main {
 @media (max-width: 600px) {
   .hero {
     padding: 64px 0 32px;
-  }
-
-  .upload-preview-row {
-    flex-direction: column;
-    align-items: flex-start;
   }
 }
