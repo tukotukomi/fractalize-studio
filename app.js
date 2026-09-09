@@ -94,29 +94,15 @@
     stickyNavObserver.observe(heroLogo);
   }
 
-  // --- Live audio setup --------------------------------------------------
-  // Same "Live audio input" checkbox + device picker the fractal/
-  // visualizer settings panels have, but reachable before ever opening
-  // either -- lets a visitor grant mic access and pick their VB-CABLE
-  // (or similar) device once, up front, so whichever view they open
-  // next is already reactive instead of needing the settings panel
-  // mid-experience. wireLiveAudioControls is the exact same function
-  // those panels use internally (see fractalize-core.js), just exposed
-  // for a host page to call directly against its own markup.
-  const liveAudioPanel = document.querySelector(".live-audio-help [data-live-audio-panel]");
-  if (liveAudioPanel) window.FractalizeCore.wireLiveAudioControls(liveAudioPanel);
-
   // --- "Start fractalizing" panel -------------------------------------
-  // A second, streamlined entry point (see index.html) -- resolve live
-  // audio first, then launch straight into a fractal on a random
-  // curated photo, rather than browsing to one. Deliberately duplicates
-  // the live-audio-help card below rather than replacing it: a test of
-  // a more guided path, not a redesign of the existing one. Its own
-  // panel is wired via the exact same wireLiveAudioControls the card
-  // below uses (same shared microphone stream), and syncLiveAudioPanel
-  // on open reflects an already-granted stream from THAT card
-  // immediately, rather than only after this one's own button is
-  // clicked. Inline disclosure, not a popup -- .hero-cta just toggles
+  // The page's own live-audio entry point (see index.html) -- resolve
+  // live audio first, then launch straight into a fractal on a random
+  // curated photo, rather than browsing to one. Its panel is wired via
+  // the exact same wireLiveAudioControls the fractal/visualizer's own
+  // settings panels use internally (same shared microphone stream), and
+  // syncLiveAudioPanel on open reflects an already-granted stream from
+  // one of THOSE immediately, rather than only after this one's own
+  // button is clicked. Inline disclosure, not a popup -- .hero-cta just toggles
   // it open/closed in place (clicking it again, or either of the
   // panel's own two buttons, is how it closes -- no separate close
   // control).

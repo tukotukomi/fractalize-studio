@@ -175,18 +175,10 @@ a {
   color: #fff;
 }
 
-/* Same full width as .upload-card/.catalog below (a plain child of
-   main, no width override of its own) -- a card treatment (border +
-   faint fill) so two lines of instructions plus a checkbox don't just
-   read as orphaned text before the upload dropzone. */
-.live-audio-help {
-  margin-bottom: 32px;
-  padding: 20px 24px;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
+/* Used inside .start-panel only now (see below) -- an earlier
+   always-visible checkbox card of its own, styled with this same
+   class, was removed once .start-panel covered the same ground in a
+   more guided way. */
 .live-audio-help-step {
   margin: 0 0 8px;
   font-size: 0.9rem;
@@ -391,12 +383,12 @@ main {
 
 /* --- "Start fractalizing" panel ----------------------------------------- */
 /* An inline disclosure, not a popup -- toggled open by .hero-cta, sits
-   between it and .live-audio-help in the page's own flow (see
-   index.html). No width override of its own, same as .upload-card/
-   .catalog/.live-audio-help above -- a plain child of main, full width.
-   Same faint-fill card treatment as .live-audio-help too, just because
-   it's the adjacent element, not because it's layered above anything
-   (no position/z-index needed either). */
+   right above .upload-card in the page's own flow (see index.html). No
+   width override of its own, same as .upload-card/.catalog below -- a
+   plain child of main, full width. The same faint-fill card treatment
+   an earlier always-visible live-audio checkbox card used, just
+   because it reads well here too, not because this is layered above
+   anything (no position/z-index needed either). */
 .start-panel {
   margin: 24px 0 32px;
   padding: 20px 24px;
