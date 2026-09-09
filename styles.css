@@ -213,6 +213,21 @@ a {
   scroll-margin-top: 72px;
 }
 
+/* ➀ specifically (not ➁'s own two forms, which share this same base
+   class but live inside main, not .hero) -- it's always the LAST
+   child of .hero whenever it's visible, so .hero's own 48px bottom
+   padding (meant to give breathing room below whatever IS last there
+   in the default, flow-closed state -- untouched on purpose) was
+   stacking on top of .start-panel/[data-live-audio-confirm]'s own
+   margin-top below, inflating that gap to 64px instead of the
+   intended 16px. This negative margin cancels exactly that padding
+   for this one case, leaving the gap below ➀ governed purely by
+   whatever comes next's own margin-top, same as every other gap in
+   this flow. */
+[data-start-fractalizing-step] {
+  margin-bottom: -48px;
+}
+
 /* Whichever step is the one actually in progress right now (see
    app.js) -- bigger and full-white instead of the dimmer default
    above, same idea a numbered wizard's own current-step highlight
@@ -239,7 +254,12 @@ a {
    than sharing normal flow with it). */
 .pick-image-row {
   position: relative;
-  margin: 28px 0 0;
+  /* No top margin of its own (was 28px) -- relies entirely on
+     whatever precedes it (.start-panel or [data-live-audio-confirm],
+     both 16px margin-bottom) collapsing through, so this gap matches
+     every other 16px gap in this flow instead of winning out to 28px
+     over that 16px in the collapse. */
+  margin: 0;
 }
 
 .pick-image-row .start-fractalizing-step {
@@ -565,11 +585,14 @@ main {
    just because it reads well here too, not because this is layered
    above anything (no position/z-index needed either). */
 .start-panel {
-  /* Set to a flat 16px (was 4.8px) -- matches [data-live-audio-confirm]'s
-     own top margin below, so the gap from ➀ down to whichever of the
-     two (panel, then later that button) is actually showing stays the
-     same regardless of which stage of the flow it is. */
-  margin: 16px 0 32px;
+  /* Flat 16px both sides now (top was 4.8px, bottom was still the
+     original 32px -- never actually touched by the "reduce to 16px"
+     request two rounds ago, which only meant to hit the top). Matches
+     [data-live-audio-confirm]'s own margin below, so the gap from ➀
+     down to whichever of the two (panel, then later that button) is
+     showing, and the gap from there down to ➁, all land on the same
+     16px regardless of which stage of the flow it is. */
+  margin: 16px 0;
   padding: 20px 24px;
   border-radius: 16px;
   background: rgba(255, 255, 255, 0.03);
