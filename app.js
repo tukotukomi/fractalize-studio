@@ -116,6 +116,7 @@
   const pickImageStep = document.querySelector("[data-pick-image-step]");
   const pickImageRow = document.querySelector("[data-pick-image-row]");
   const pickImageMarker = document.querySelector("[data-pick-image-marker]");
+  const liveAudioConfirm = document.querySelector("[data-live-audio-confirm]");
   const photoCollection = document.querySelector("[data-photo-collection]");
   const stepConnector = document.querySelector("[data-step-connector]");
 
@@ -243,17 +244,25 @@
     function closeStartPanel(keepProgress) {
       startBtn.setAttribute("aria-expanded", "false");
       if (keepProgress) {
-        // Collapses in place instead of disappearing -- only the
-        // live-audio button itself (now showing its "in use"/green
-        // state, see .start-panel.is-collapsed in styles.css) stays
-        // visible, a persistent confirmation rather than the whole
-        // setup panel sticking around once its job is done.
-        startPanel.classList.add("is-collapsed");
+        // Hides the panel entirely, same as every other close path --
+        // but [data-live-audio-confirm] takes its place right there
+        // instead of nothing, a standalone duplicate of the panel's own
+        // live-audio button (copied over once here, not kept
+        // live-synced afterward -- see its own comment in index.html).
+        startPanel.hidden = true;
+        if (liveAudioConfirm) {
+          liveAudioConfirm.textContent = startPanelLiveAudioBtn.textContent;
+          liveAudioConfirm.classList.toggle("is-active", liveAudioActive);
+          liveAudioConfirm.hidden = false;
+        }
         return;
       }
       startPanel.hidden = true;
-      startPanel.classList.remove("is-collapsed");
       startBtn.hidden = false;
+      if (liveAudioConfirm) {
+        liveAudioConfirm.hidden = true;
+        liveAudioConfirm.classList.remove("is-active");
+      }
       if (startFractalizingHeader) startFractalizingHeader.hidden = true;
       if (startFractalizingStep) {
         startFractalizingStep.hidden = true;
@@ -321,14 +330,15 @@
         if (startFractalizingStep) startFractalizingStep.classList.remove("is-current");
         if (pickImageMarker) pickImageMarker.classList.add("is-current");
         // Deferred a frame for the same reason openStartPanel's own
-        // scroll is -- lets the reflow from unhiding/collapsing settle
+        // scroll is -- lets the reflow from unhiding/hiding settle
         // first (the step-connector needs that same settled layout to
-        // measure against -- .start-panel just collapsed, which moves
-        // ➁ up, so this re-measure matters here specifically). Scrolls
-        // back up to ➀'s own line -- .start-panel collapsing to just
-        // its live-audio button, right underneath, is the thing to
-        // actually confirm here, not the collection further down
-        // (already revealed, just not what's brought into view).
+        // measure against -- .start-panel just hid, replaced by
+        // [data-live-audio-confirm] right underneath, which moves ➁ up,
+        // so this re-measure matters here specifically). Scrolls back
+        // up to ➀'s own line -- that standalone confirmation button is
+        // the thing to actually confirm here, not the collection
+        // further down (already revealed, just not what's brought into
+        // view).
         requestAnimationFrame(() => {
           updateStepConnector();
           if (startFractalizingStep) {

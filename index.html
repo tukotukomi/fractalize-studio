@@ -13,7 +13,7 @@
        commit hash right before each commit that touches either file,
        so it's always one commit behind true HEAD. Worth revisiting
        once this page is more stable and shipping less often. -->
-  <link rel="stylesheet" href="styles.css?v=9e7c947">
+  <link rel="stylesheet" href="styles.css?v=7813e4a">
   <link rel="stylesheet" href="fractalize-core/fractalize-core.css?v=fa60569">
 </head>
 <body>
@@ -121,6 +121,15 @@
       <button type="button" class="action-btn action-btn-secondary start-panel-skip-btn" data-start-panel-skip>Use Without Live Audio</button>
     </section>
 
+    <!-- Shown standalone once PICK YOUR IMAGE is clicked, replacing
+         .start-panel itself entirely (see app.js) -- a duplicate of
+         that panel's own live-audio button (its text/color copied
+         over once at that point, not kept live-synced afterward,
+         since the flow's effectively locked in by then) rather than
+         extracting the original out of its own card. Minimal margin
+         (see styles.css) so ➀/➁ don't end up far apart. -->
+    <button type="button" class="hero-cta" data-live-audio-confirm hidden>Use Live Audio Input</button>
+
     <!-- Shown/hidden together with the header/➀ above (see app.js) --
          underneath .start-panel, right from START FRACTALIZING itself,
          same as ➀: a persistent step-2 label, not gated behind
@@ -184,6 +193,6 @@
 
   <script src="photo-catalog.js"></script>
   <script src="fractalize-core/fractalize-core.js?v=fa60569"></script>
-  <script src="app.js?v=9e7c947"></script>
+  <script src="app.js?v=7813e4a"></script>
 </body>
 </html>
