@@ -427,47 +427,150 @@
     }
   }
 
-  // --- Curated photo grid -------------------------------------------
-  const groupsEl = document.querySelector("[data-catalog-groups]");
+  // --- Photo collections: card grid, expanding into one at a time -------
+  // Landing spot once PICK YOUR IMAGE reveals .photo-collection -- with
+  // six collections' worth of photos, showing every one's own full row of
+  // thumbs at once (the old layout) made this section far too long to be
+  // a reasonable first thing to land on. A card (cover photo, name,
+  // description) per collection instead; only the one actually clicked
+  // expands to its own full thumbnail grid, in [data-catalog-expanded]
+  // (see its own comment in index.html for why "Your Uploads" and a
+  // curated collection are handled by two separate sections there rather
+  // than one shared, rebuilt-every-time template).
+  const collectionCardsEl = document.querySelector("[data-collection-cards]");
+  const catalogExpanded = document.querySelector("[data-catalog-expanded]");
+  const catalogBackBtn = document.querySelector("[data-catalog-back]");
+  const uploadsSection = document.querySelector("[data-uploads-catalog]");
+  const uploadsRow = document.querySelector("[data-uploads-row]");
+  const curatedExpandedSection = document.querySelector("[data-curated-expanded]");
+  const curatedExpandedHeading = document.querySelector("[data-curated-expanded-heading]");
+  const curatedExpandedRow = document.querySelector("[data-curated-expanded-row]");
+  // The uploads row's first, permanent child (see index.html) -- new
+  // thumbs are always inserted right after it, never before, so it stays
+  // the first tile no matter how many uploads pile up around it.
+  const addTile = uploadsRow ? uploadsRow.querySelector(".catalog-add-thumb") : null;
+
   const FRACTAL_ICON =
     '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16px" height="16px" fill="#111" fill-rule="evenodd"><path d="M12 3 L21 20 L3 20 Z M7.5 11.5 L16.5 11.5 L12 20 Z"/></svg>';
   const VISUALIZE_ICON =
     '<svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="16px" fill="#111"><path d="M852-212 732-332l56-56 120 120-56 56ZM708-692l-56-56 120-120 56 56-120 120Zm-456 0L132-812l56-56 120 120-56 56ZM108-212l-56-56 120-120 56 56-120 120Zm246-75 126-76 126 77-33-144 111-96-146-13-58-136-58 135-146 13 111 97-33 143ZM233-120l65-281L80-590l288-25 112-265 112 265 288 25-218 189 65 281-247-149-247 149Zm247-361Z"/></svg>';
 
-  (window.FRACTALIZE_CATALOG || []).forEach((group) => {
-    const section = document.createElement("div");
-    section.className = "catalog-group";
-    const heading = document.createElement("h3");
-    heading.className = "catalog-group-label";
-    heading.textContent = group.label;
-    section.appendChild(heading);
-
-    const row = document.createElement("div");
-    row.className = "catalog-row";
-    group.photos.forEach((photo) => {
-      const thumb = document.createElement("div");
-      thumb.className = "catalog-thumb";
-      thumb.innerHTML =
-        '<img src="' + photo.thumbSrc + '" alt="" loading="lazy" decoding="async" width="200" height="200">' +
-        '<div class="catalog-thumb-actions">' +
-        '<button type="button" class="thumb-action" data-action="fractal" aria-label="Open as fractal">' +
-        FRACTAL_ICON +
-        "</button>" +
-        '<button type="button" class="thumb-action" data-action="visualize" aria-label="Visualize to music">' +
-        VISUALIZE_ICON +
-        "</button>" +
-        "</div>";
-      thumb.querySelector('[data-action="fractal"]').addEventListener("click", () => {
-        window.FractalizeCore.openFractal(photo.src);
-      });
-      thumb.querySelector('[data-action="visualize"]').addEventListener("click", () => {
-        window.FractalizeCore.openVisualizer(photo.src);
-      });
-      row.appendChild(thumb);
+  // A plain thumb, no delete action -- only an upload (its own
+  // renderUploadThumb below) can ever be removed. Shared by every
+  // curated collection's own expanded row, rebuilt fresh each time one
+  // is opened.
+  function renderCuratedThumb(photo) {
+    const thumb = document.createElement("div");
+    thumb.className = "catalog-thumb";
+    thumb.innerHTML =
+      '<img src="' + photo.thumbSrc + '" alt="" loading="lazy" decoding="async" width="200" height="200">' +
+      '<div class="catalog-thumb-actions">' +
+      '<button type="button" class="thumb-action" data-action="fractal" aria-label="Open as fractal">' +
+      FRACTAL_ICON +
+      "</button>" +
+      '<button type="button" class="thumb-action" data-action="visualize" aria-label="Visualize to music">' +
+      VISUALIZE_ICON +
+      "</button>" +
+      "</div>";
+    thumb.querySelector('[data-action="fractal"]').addEventListener("click", () => {
+      window.FractalizeCore.openFractal(photo.src);
     });
-    section.appendChild(row);
-    groupsEl.appendChild(section);
-  });
+    thumb.querySelector('[data-action="visualize"]').addEventListener("click", () => {
+      window.FractalizeCore.openVisualizer(photo.src);
+    });
+    return thumb;
+  }
+
+  // A card's own cover: the collection's own first photo, or -- only
+  // reachable for Your Uploads before anything's been added yet -- the
+  // same "+" invitation .catalog-add-thumb itself uses, so an empty
+  // uploads collection still reads as "add something here" rather than
+  // a broken image.
+  function collectionCoverHtml(coverSrc) {
+    if (coverSrc) {
+      return '<img src="' + coverSrc + '" alt="" loading="lazy" decoding="async">';
+    }
+    return '<span class="collection-card-cover-empty" aria-hidden="true">+</span>';
+  }
+
+  function collectionCardHtml(coverSrc, name, description) {
+    return (
+      '<div class="collection-card-cover' + (coverSrc ? "" : " is-empty") + '">' +
+      collectionCoverHtml(coverSrc) +
+      "</div>" +
+      '<h3 class="collection-card-name">' + name + "</h3>" +
+      '<p class="collection-card-description">' + description + "</p>"
+    );
+  }
+
+  // Rebuilt from scratch every time -- called on load, and again
+  // whenever the uploads list changes (mirrors rebuildFullCatalog's own
+  // call sites below), so Your Uploads' own cover/photo always reflects
+  // what's actually saved rather than a stale snapshot from an earlier
+  // render.
+  function renderCollectionCards() {
+    if (!collectionCardsEl) return;
+    collectionCardsEl.innerHTML = "";
+
+    const uploadsCard = document.createElement("button");
+    uploadsCard.type = "button";
+    uploadsCard.className = "collection-card";
+    uploadsCard.innerHTML = collectionCardHtml(
+      uploadedPhotoRecords.length ? uploadedPhotoRecords[0].url : null,
+      "Your Uploads",
+      "Your own uploads never leave your browser."
+    );
+    uploadsCard.addEventListener("click", openUploadsCollection);
+    collectionCardsEl.appendChild(uploadsCard);
+
+    (window.FRACTALIZE_CATALOG || []).forEach((group) => {
+      const card = document.createElement("button");
+      card.type = "button";
+      card.className = "collection-card";
+      card.innerHTML = collectionCardHtml(
+        group.photos.length ? group.photos[0].thumbSrc : null,
+        group.label,
+        "Tuko's Photography"
+      );
+      card.addEventListener("click", () => openCuratedCollection(group));
+      collectionCardsEl.appendChild(card);
+    });
+  }
+
+  function showExpanded() {
+    if (!collectionCardsEl || !catalogExpanded) return;
+    collectionCardsEl.hidden = true;
+    catalogExpanded.hidden = false;
+    requestAnimationFrame(() => catalogExpanded.scrollIntoView({ behavior: "smooth", block: "start" }));
+  }
+
+  function openUploadsCollection() {
+    if (uploadsSection) uploadsSection.hidden = false;
+    if (curatedExpandedSection) curatedExpandedSection.hidden = true;
+    showExpanded();
+  }
+
+  function openCuratedCollection(group) {
+    if (!curatedExpandedSection || !curatedExpandedRow) return;
+    if (uploadsSection) uploadsSection.hidden = true;
+    curatedExpandedSection.hidden = false;
+    curatedExpandedHeading.textContent = group.label;
+    curatedExpandedRow.innerHTML = "";
+    group.photos.forEach((photo) => curatedExpandedRow.appendChild(renderCuratedThumb(photo)));
+    showExpanded();
+  }
+
+  if (catalogBackBtn && collectionCardsEl && catalogExpanded) {
+    catalogBackBtn.addEventListener("click", () => {
+      catalogExpanded.hidden = true;
+      collectionCardsEl.hidden = false;
+      // A new/deleted upload while inside that collection changes its
+      // own card -- refresh so it's not still showing a stale cover
+      // once back at the grid.
+      renderCollectionCards();
+      requestAnimationFrame(() => collectionCardsEl.scrollIntoView({ behavior: "smooth", block: "start" }));
+    });
+  }
 
   // --- Persisted uploads (IndexedDB) -------------------------------------
   // An uploaded photo is otherwise session-only: its blob: URL (see the
@@ -544,12 +647,6 @@
     );
   }
 
-  const uploadsSection = document.querySelector("[data-uploads-catalog]");
-  const uploadsRow = document.querySelector("[data-uploads-row]");
-  // The row's first, permanent child (see index.html) -- new thumbs are
-  // always inserted right after it, never before, so it stays the
-  // first tile no matter how many uploads pile up around it.
-  const addTile = uploadsRow ? uploadsRow.querySelector(".catalog-add-thumb") : null;
   const DELETE_ICON =
     '<svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="16px" fill="#111"><path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360Z"/></svg>';
 
@@ -586,6 +683,11 @@
         const idx = uploadedPhotoRecords.findIndex((r) => r.id === record.id);
         if (idx !== -1) uploadedPhotoRecords.splice(idx, 1);
         rebuildFullCatalog();
+        // The deleted photo might have been the card's own cover --
+        // only actually visible once back at the card grid (this thumb
+        // lives in the expanded uploads view), but cheap enough to just
+        // always refresh rather than track whether it mattered here.
+        renderCollectionCards();
       });
     });
     uploadedPhotoRecords.push({ id: record.id, url: url });
@@ -596,7 +698,13 @@
     getAllUploadedPhotos()
       .then((records) => {
         records.forEach((record) => uploadsRow.appendChild(renderUploadThumb(record)));
-        if (records.length) rebuildFullCatalog();
+        if (records.length) {
+          rebuildFullCatalog();
+          // Replaces the placeholder "+" cover the initial render below
+          // shipped with (uploads hadn't loaded yet at that point) with
+          // the real first photo.
+          renderCollectionCards();
+        }
       })
       .catch(() => {
         // IndexedDB unavailable/blocked -- new uploads below still work
@@ -619,6 +727,7 @@
         .then((record) => {
           uploadsRow.insertBefore(renderUploadThumb(record), addTile.nextSibling);
           rebuildFullCatalog();
+          renderCollectionCards();
         })
         .catch(() => {
           // Storage unavailable or quota exceeded -- this upload just
@@ -645,4 +754,10 @@
   // catalog refresh). Set once at load, well before a visitor could
   // ever open either overlay.
   window.FractalizeCore.setUploadHandler(saveFilesToUploads);
+
+  // Initial card grid render -- uploads haven't loaded from IndexedDB
+  // yet at this point (that's async, see above), so Your Uploads' own
+  // card starts with the placeholder "+" cover; the load-success handler
+  // above re-renders once the real photos (if any) are in.
+  renderCollectionCards();
 })();

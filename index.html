@@ -13,7 +13,7 @@
        commit hash right before each commit that touches either file,
        so it's always one commit behind true HEAD. Worth revisiting
        once this page is more stable and shipping less often. -->
-  <link rel="stylesheet" href="styles.css?v=cae1ed1">
+  <link rel="stylesheet" href="styles.css?v=ed584ee">
   <link rel="stylesheet" href="fractalize-core/fractalize-core.css?v=fa60569">
 </head>
 <body>
@@ -188,29 +188,48 @@
          alongside the guided .start-panel flow above, not the page's
          first thing anymore. -->
     <div class="photo-collection" data-photo-collection hidden>
-      <!-- The page's one upload entry point now that its own "+" tile
-           (first item in the row) replaces the old standalone dropzone
-           -- always visible once this wrapper is, not just once
-           there's an upload. The rest is populated from IndexedDB (see
-           app.js) with whatever's been saved on a previous visit, on
-           this device/browser only. -->
-      <section class="uploads-catalog" data-uploads-catalog>
-        <h2 class="catalog-heading" data-uploads-heading>Your Uploads</h2>
-        <p class="uploads-catalog-note">Your own uploads never leave your browser.</p>
-        <div class="catalog-row" data-uploads-row>
-          <label class="catalog-thumb catalog-add-thumb" for="uploads-add-input" aria-label="Add photos">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="28px" height="28px" fill="#e3e3e3">
-              <path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"/>
-            </svg>
-            <input type="file" id="uploads-add-input" accept="image/*" multiple data-uploads-add-input hidden>
-          </label>
-        </div>
-      </section>
+      <!-- Card grid: cover photo, name, one-line description -- shown
+           first. Six collections' worth of photos all laid out in full
+           at once (the old layout, one row per collection) made this
+           section far too long to be a reasonable first landing spot;
+           now only the collection actually clicked below expands to
+           its own full thumbnail grid. Entirely populated by app.js
+           (renderCollectionCards), including "Your Uploads" itself, so
+           its own cover/description reflect whatever's actually saved
+           in IndexedDB right now rather than a static markup guess. -->
+      <div class="collection-cards" data-collection-cards></div>
 
-      <section class="catalog">
-        <h2 class="catalog-heading">Tuko's Photography</h2>
-        <div class="catalog-groups" data-catalog-groups></div>
-      </section>
+      <!-- Expanded single-collection view, hidden until a card above is
+           actually clicked (see app.js's openUploadsCollection/
+           openCuratedCollection). Only one of the two sections below is
+           ever shown at a time: [data-uploads-catalog] specifically for
+           "Your Uploads" (its own upload/delete wiring needs a fixed,
+           always-in-DOM structure, so it's toggled here rather than
+           torn down and rebuilt the way the curated one below is),
+           [data-curated-expanded] for whichever curated collection was
+           actually clicked (rebuilt fresh each time, since which one
+           that is changes). -->
+      <div data-catalog-expanded hidden>
+        <button type="button" class="catalog-back-btn" data-catalog-back>← All Collections</button>
+
+        <section class="uploads-catalog" data-uploads-catalog hidden>
+          <h2 class="catalog-heading" data-uploads-heading>Your Uploads</h2>
+          <p class="uploads-catalog-note">Your own uploads never leave your browser.</p>
+          <div class="catalog-row" data-uploads-row>
+            <label class="catalog-thumb catalog-add-thumb" for="uploads-add-input" aria-label="Add photos">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="28px" height="28px" fill="#e3e3e3">
+                <path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"/>
+              </svg>
+              <input type="file" id="uploads-add-input" accept="image/*" multiple data-uploads-add-input hidden>
+            </label>
+          </div>
+        </section>
+
+        <section class="catalog" data-curated-expanded hidden>
+          <h2 class="catalog-heading" data-curated-expanded-heading></h2>
+          <div class="catalog-row" data-curated-expanded-row></div>
+        </section>
+      </div>
     </div>
   </main>
 
@@ -220,6 +239,6 @@
 
   <script src="photo-catalog.js"></script>
   <script src="fractalize-core/fractalize-core.js?v=fa60569"></script>
-  <script src="app.js?v=cae1ed1"></script>
+  <script src="app.js?v=ed584ee"></script>
 </body>
 </html>
