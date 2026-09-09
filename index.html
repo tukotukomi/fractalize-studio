@@ -40,6 +40,12 @@
     <span class="sticky-nav-title">FRACTALIZE STUDIO</span>
   </nav>
 
+  <!-- Positioned/sized entirely by app.js's updateStepConnector, since
+       its two endpoints (➀ in .hero, ➁ in main) live in different
+       containers with a disclosure panel that can be open or closed
+       between them -- see .step-connector's own comment in styles.css. -->
+  <div class="step-connector" data-step-connector hidden aria-hidden="true"></div>
+
   <header class="hero">
     <h1 class="hero-title"><img class="hero-logo" src="logo.png" alt="Fractalize Studio"></h1>
     <video class="hero-banner" autoplay loop muted playsinline>
@@ -70,7 +76,7 @@
     <!-- Shown/hidden together with the header above (see app.js) -- the
          first of two step markers in this flow, the second (➁) sits
          next to PICK YOUR IMAGE further down once that's revealed. -->
-    <p class="start-fractalizing-step" data-start-fractalizing-step hidden>➀ Check audio settings</p>
+    <p class="start-fractalizing-step" data-start-fractalizing-step hidden>➀ Check your audio settings</p>
   </header>
 
   <main>
@@ -116,6 +122,11 @@
       <span class="step-marker" aria-hidden="true">➁</span>
       <button type="button" class="hero-cta" data-pick-image>PICK YOUR IMAGE</button>
     </div>
+    <!-- Replaces the row above once that button is clicked (see
+         app.js) -- same swap pattern as START FRACTALIZING/
+         FRACTALIZE SETUP, and same .start-fractalizing-step styling
+         as ➀ above so the two read as one matching pair. -->
+    <p class="start-fractalizing-step" data-pick-image-step hidden>➁ Pick your image</p>
 
     <!-- Hidden until [data-pick-image] above is clicked (see app.js) --
          browsing straight to a photo is a second, more deliberate path

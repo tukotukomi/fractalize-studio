@@ -66,7 +66,16 @@ a {
 }
 
 .hero {
-  max-width: 720px;
+  /* Same as main's own max-width below, not this box's old 720px --
+     centered independently, two different widths meant two different
+     left edges on any viewport wide enough for both to hit their cap,
+     throwing off .start-fractalizing-header/.start-fractalizing-step's
+     own left alignment against .start-panel's. Every child here still
+     centers itself the same as before regardless (.hero-logo/
+     .hero-banner both cap out well under 720px anyway, .hero-cta
+     buttons via their own margin:auto) -- only the newly left-aligned
+     text actually reaches further out now, on purpose. */
+  max-width: 960px;
   margin: 0 auto;
   /* Top halved (was 96px) -- less space above the logo banner. */
   padding: 48px 0;
@@ -187,9 +196,11 @@ a {
   color: #fff;
 }
 
-/* The first of this flow's two step markers (➁ sits with
-   .pick-image-row further down) -- shown/hidden together with the
-   header above (see app.js), left-aligned to match it. */
+/* Both of this flow's step lines share this class -- "➀ Check your
+   audio settings" (shown/hidden with the header above, see app.js) and
+   "➁ Pick your image" (shown once [data-pick-image-row] below is
+   clicked, replacing it) look identical on purpose, left-aligned to
+   match the header and .start-panel. */
 .start-fractalizing-step {
   margin: 0;
   text-align: left;
@@ -197,32 +208,47 @@ a {
   color: rgba(255, 255, 255, 0.75);
 }
 
-/* PICK YOUR IMAGE's own row, with its ➁ step marker -- left-aligned
-   (unlike .hero-cta's own margin:auto centering, overridden below) and
-   the two vertically centered against each other. display:flex above
-   the default UA [hidden] rule at equal specificity needs the same
-   explicit re-assertion .upload-preview-row etc. already use elsewhere
-   in this file. */
+/* PICK YOUR IMAGE's own row, with its ➁ step marker -- the marker
+   pinned to the row's own left edge (matching the step lines' own left
+   alignment), the button still centered the way every other .hero-cta
+   is (margin:auto restored below, since .step-marker being absolutely
+   positioned takes it out of flow rather than sharing a flex row with
+   it). */
 .pick-image-row {
-  display: flex;
-  align-items: center;
-  gap: 14px;
+  position: relative;
   margin: 28px 0 0;
 }
 
-.pick-image-row[hidden] {
-  display: none;
+.pick-image-row .hero-cta {
+  margin: 0 auto;
 }
 
-.pick-image-row .hero-cta {
-  margin: 0;
+.pick-image-row .step-marker {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 .step-marker {
-  flex-shrink: 0;
   font-size: 1.3rem;
   font-weight: 700;
   color: #fff;
+}
+
+/* Denotes progress between the two step lines above -- only shown once
+   both are simultaneously visible (see updateStepConnector in app.js,
+   which also positions/sizes this: no ancestor here is a fixed size or
+   shares one with both endpoints, so this is JS-measured against each
+   line's own getBoundingClientRect() rather than a CSS-only span).
+   Sits absolutely against the page itself (no positioned ancestor
+   needed) since its two endpoints live in different containers
+   (.start-fractalizing-step in .hero, [data-pick-image-step] in main). */
+.step-connector {
+  position: absolute;
+  width: 0;
+  border-left: 2px dotted rgba(255, 255, 255, 0.35);
+  pointer-events: none;
 }
 
 /* Fixed regardless of body's own side padding (position: fixed sizes

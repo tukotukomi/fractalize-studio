@@ -114,7 +114,37 @@
   const startFractalizingStep = document.querySelector("[data-start-fractalizing-step]");
   const pickImageRow = document.querySelector("[data-pick-image-row]");
   const pickImageBtn = document.querySelector("[data-pick-image]");
+  const pickImageStep = document.querySelector("[data-pick-image-step]");
   const photoCollection = document.querySelector("[data-photo-collection]");
+  const stepConnector = document.querySelector("[data-step-connector]");
+
+  // Dotted line "denoting progress" between the ➀/➁ step lines -- only
+  // meaningful once both are visible as text (➁ only becomes one once
+  // [data-pick-image] itself is clicked, see below). No shared
+  // positioned ancestor spans both -- ➀ lives in .hero, ➁ in main, with
+  // .start-panel possibly open or closed between them -- so this
+  // measures each line's own getBoundingClientRect() directly and
+  // positions/sizes .step-connector in document coordinates instead of
+  // relying on CSS alone.
+  function updateStepConnector() {
+    if (!stepConnector || !startFractalizingStep || !pickImageStep) return;
+    if (startFractalizingStep.hidden || pickImageStep.hidden) {
+      stepConnector.hidden = true;
+      return;
+    }
+    const from = startFractalizingStep.getBoundingClientRect();
+    const to = pickImageStep.getBoundingClientRect();
+    const top = from.top + window.scrollY + from.height / 2;
+    const bottom = to.top + window.scrollY + to.height / 2;
+    stepConnector.style.top = top + "px";
+    stepConnector.style.height = Math.max(0, bottom - top) + "px";
+    // A small gutter left of the text itself -- "alongside the left
+    // margin", not threading through the ➀/➁ glyphs.
+    stepConnector.style.left = from.left + window.scrollX - 16 + "px";
+    stepConnector.hidden = false;
+  }
+  window.addEventListener("resize", updateStepConnector);
+
   if (startBtn && startPanel) {
     const startPanelLiveAudioBtn = document.querySelector("[data-start-panel-live-audio-btn]");
     const startPanelSkipBtn = document.querySelector("[data-start-panel-skip]");
@@ -171,9 +201,14 @@
         (startFractalizingHeader || startPanel).scrollIntoView({ behavior: "smooth", block: "start" });
       });
     }
-    function closeStartPanel() {
+    // keepProgress: true from the PICK YOUR IMAGE path below -- ➀ and
+    // the header need to stay put there (not reset like every other
+    // close path) so the step-connector above still has something to
+    // connect ➁ to once it appears.
+    function closeStartPanel(keepProgress) {
       startPanel.hidden = true;
       startBtn.setAttribute("aria-expanded", "false");
+      if (keepProgress) return;
       startBtn.hidden = false;
       if (startFractalizingHeader) startFractalizingHeader.hidden = true;
       if (startFractalizingStep) startFractalizingStep.hidden = true;
@@ -212,13 +247,20 @@
     if (pickImageBtn && photoCollection) {
       pickImageBtn.addEventListener("click", () => {
         photoCollection.hidden = false;
-        closeStartPanel();
+        closeStartPanel(true);
+        // Same swap pattern as START FRACTALIZING/FRACTALIZE SETUP --
+        // the row's done its job, ➁'s own step line takes its place.
+        if (pickImageRow) pickImageRow.hidden = true;
+        if (pickImageStep) pickImageStep.hidden = false;
         // Deferred a frame for the same reason openStartPanel's own
-        // scroll is -- lets the reflow from unhiding settle first.
+        // scroll is -- lets the reflow from unhiding settle first (the
+        // step-connector needs that same settled layout to measure
+        // against, so it's updated in the same callback).
         // block:'start' here, not 'nearest': unlike that scroll, the
         // point IS to move attention well down the page, to a section
         // that's currently entirely offscreen.
         requestAnimationFrame(() => {
+          updateStepConnector();
           photoCollection.scrollIntoView({ behavior: "smooth", block: "start" });
         });
       });
