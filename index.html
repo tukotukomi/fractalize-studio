@@ -13,7 +13,7 @@
        commit hash right before each commit that touches either file,
        so it's always one commit behind true HEAD. Worth revisiting
        once this page is more stable and shipping less often. -->
-  <link rel="stylesheet" href="styles.css?v=9c4c97e">
+  <link rel="stylesheet" href="styles.css?v=e115715">
   <link rel="stylesheet" href="fractalize-core/fractalize-core.css?v=fa60569">
 </head>
 <body>
@@ -84,8 +84,9 @@
     <!-- Shown/hidden together with the header above (see app.js) -- the
          first of two step lines in this flow, ➁ further down. Gets
          .is-current (bigger, white -- see styles.css) while step 1 is
-         the one actually in progress, handed off to ➁ once "Use Live
-         Audio Input" is clicked. -->
+         the one actually in progress -- stays that way through the
+         live-audio grant itself, handed off to ➁ only once PICK YOUR
+         IMAGE is actually clicked. -->
     <p class="start-fractalizing-step" data-start-fractalizing-step hidden>➀ Check your audio settings</p>
   </header>
 
@@ -158,7 +159,8 @@
            app.js) with whatever's been saved on a previous visit, on
            this device/browser only. -->
       <section class="uploads-catalog" data-uploads-catalog>
-        <h2 class="catalog-heading">Your Uploads</h2>
+        <h2 class="catalog-heading" data-uploads-heading>Your Uploads</h2>
+        <p class="uploads-catalog-note">Your own uploads never leave your browser.</p>
         <div class="catalog-row" data-uploads-row>
           <label class="catalog-thumb catalog-add-thumb" for="uploads-add-input" aria-label="Add photos">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="28px" height="28px" fill="#e3e3e3">
@@ -182,6 +184,6 @@
 
   <script src="photo-catalog.js"></script>
   <script src="fractalize-core/fractalize-core.js?v=fa60569"></script>
-  <script src="app.js?v=9c4c97e"></script>
+  <script src="app.js?v=e115715"></script>
 </body>
 </html>

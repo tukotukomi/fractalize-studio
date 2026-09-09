@@ -273,12 +273,12 @@
       // ➁'s own preview line simplifies to just the marker now that
       // PICK YOUR IMAGE (the row it shares with) is what actually names
       // this step -- see .pick-image-row's own comment in index.html.
-      // Step 1 hands "in progress" off to step 2 at the same time (see
-      // .is-current in styles.css).
+      // ➀ stays "in progress" (.is-current, see styles.css) through
+      // this and the live-audio grant itself -- it only hands off once
+      // PICK YOUR IMAGE is actually clicked (see that handler below),
+      // not just once this step's row becomes reachable.
       if (pickImageStep) pickImageStep.hidden = true;
       if (pickImageRow) pickImageRow.hidden = false;
-      if (startFractalizingStep) startFractalizingStep.classList.remove("is-current");
-      if (pickImageMarker) pickImageMarker.classList.add("is-current");
       requestAnimationFrame(updateStepConnector);
       if (liveAudioActive) return;
       // Drives the same hidden checkbox wireLiveAudioControls is
@@ -293,6 +293,7 @@
       launchRandomFractal();
     });
 
+    const uploadsHeading = document.querySelector("[data-uploads-heading]");
     if (pickImageBtn && photoCollection) {
       pickImageBtn.addEventListener("click", () => {
         photoCollection.hidden = false;
@@ -303,6 +304,11 @@
         // row's own height (see .pick-image-row's own comment) so the
         // marker doesn't jump once the button disappears.
         pickImageBtn.classList.add("is-done");
+        // ➀ hands "in progress" off to ➁ right here -- not any earlier
+        // in this flow (see the live-audio click handler above) -- now
+        // that a photo is actually being picked.
+        if (startFractalizingStep) startFractalizingStep.classList.remove("is-current");
+        if (pickImageMarker) pickImageMarker.classList.add("is-current");
         // Deferred a frame for the same reason openStartPanel's own
         // scroll is -- lets the reflow from unhiding/closing settle
         // first (the step-connector needs that same settled layout to
@@ -310,10 +316,13 @@
         // up, so this re-measure matters here specifically).
         // block:'start' here, not 'nearest': unlike that scroll, the
         // point IS to move attention well down the page, to a section
-        // that's currently entirely offscreen.
+        // that's currently entirely offscreen. Scrolls to the "Your
+        // Uploads" heading specifically, not just .photo-collection's
+        // own top edge (same position in practice today, but this is
+        // the thing a visitor should actually land looking at).
         requestAnimationFrame(() => {
           updateStepConnector();
-          photoCollection.scrollIntoView({ behavior: "smooth", block: "start" });
+          (uploadsHeading || photoCollection).scrollIntoView({ behavior: "smooth", block: "start" });
         });
       });
     }

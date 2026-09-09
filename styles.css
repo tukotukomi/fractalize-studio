@@ -388,6 +388,28 @@ main {
   margin: 0 0 24px;
 }
 
+/* Scoped to the Your Uploads heading specifically (not the shared
+   .catalog-heading class -- Tuko's Photography's own copy has no note
+   under it) -- tighter bottom margin since .uploads-catalog-note now
+   sits directly beneath it, carrying its own margin-bottom instead.
+   scroll-margin-top matches .start-fractalizing-header's own fix for
+   the same reason: app.js scrolls here on PICK YOUR IMAGE, and by then
+   .sticky-nav (~57px tall) is already visible, fixed over the true
+   viewport top. */
+[data-uploads-heading] {
+  margin-bottom: 4px;
+  scroll-margin-top: 72px;
+}
+
+/* Same claim the footer already makes, repeated here since a visitor
+   may never scroll that far -- same dim, small treatment as that
+   footer text. */
+.uploads-catalog-note {
+  margin: 0 0 20px;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.4);
+}
+
 .catalog-group {
   margin-bottom: 32px;
 }
