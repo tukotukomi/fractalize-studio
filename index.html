@@ -110,23 +110,20 @@
       <button type="button" class="action-btn action-btn-secondary start-panel-skip-btn" data-start-panel-skip>Use Without Live Audio</button>
     </section>
 
-    <!-- Hidden until the live-audio button above is first clicked (see
-         app.js) -- revealed right on that click, requesting permission
-         or not, rather than waiting for permission to actually be
-         granted. Revealing this instead of launching straight into a
-         random fractal is what replaces that old placeholder behavior:
-         the next step is picking a specific photo, not a random one.
-         The row (not the button itself) is what app.js shows/hides --
-         ➁ is this flow's second step marker, alongside ➀ above. -->
-    <div class="pick-image-row" data-pick-image-row hidden>
-      <span class="step-marker" aria-hidden="true">➁</span>
-      <button type="button" class="hero-cta" data-pick-image>PICK YOUR IMAGE</button>
-    </div>
-    <!-- Replaces the row above once that button is clicked (see
-         app.js) -- same swap pattern as START FRACTALIZING/
-         FRACTALIZE SETUP, and same .start-fractalizing-step styling
-         as ➀ above so the two read as one matching pair. -->
+    <!-- Shown/hidden together with the header/➀ above (see app.js) --
+         underneath .start-panel, right from START FRACTALIZING itself,
+         same as ➀: a persistent step-2 label, not gated behind
+         finishing step 1 first. Same .start-fractalizing-step styling
+         as ➀ so the two read as one matching pair. -->
     <p class="start-fractalizing-step" data-pick-image-step hidden>➁ Pick your image</p>
+    <!-- Hidden until the live-audio button in .start-panel is first
+         clicked (see app.js) -- ➁'s own actionable control, revealed
+         once ready, underneath the label above (no marker of its own
+         needed -- that label already names this step). Revealing this
+         instead of launching straight into a random fractal is what
+         replaces that old placeholder behavior: the next step is
+         picking a specific photo, not a random one. -->
+    <button type="button" class="hero-cta" data-pick-image hidden>PICK YOUR IMAGE</button>
 
     <!-- Hidden until [data-pick-image] above is clicked (see app.js) --
          browsing straight to a photo is a second, more deliberate path

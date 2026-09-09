@@ -197,10 +197,12 @@ a {
 }
 
 /* Both of this flow's step lines share this class -- "➀ Check your
-   audio settings" (shown/hidden with the header above, see app.js) and
-   "➁ Pick your image" (shown once [data-pick-image-row] below is
-   clicked, replacing it) look identical on purpose, left-aligned to
-   match the header and .start-panel. */
+   audio settings" and "➁ Pick your image" -- shown/hidden together
+   (see app.js), both as soon as .start-panel opens, not gated behind
+   finishing the other first. Left-aligned to match the header and
+   .start-panel. [data-pick-image] itself (the actual button for step
+   2, further down) has no marker of its own -- this label already
+   names that step. */
 .start-fractalizing-step {
   margin: 0;
   text-align: left;
@@ -208,39 +210,15 @@ a {
   color: rgba(255, 255, 255, 0.75);
 }
 
-/* PICK YOUR IMAGE's own row, with its ➁ step marker -- the marker
-   pinned to the row's own left edge (matching the step lines' own left
-   alignment), the button still centered the way every other .hero-cta
-   is (margin:auto restored below, since .step-marker being absolutely
-   positioned takes it out of flow rather than sharing a flex row with
-   it). */
-.pick-image-row {
-  position: relative;
-  margin: 28px 0 0;
-}
-
-.pick-image-row .hero-cta {
-  margin: 0 auto;
-}
-
-.pick-image-row .step-marker {
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-}
-
-.step-marker {
-  font-size: 1.3rem;
-  font-weight: 700;
-  color: #fff;
-}
-
 /* Denotes progress between the two step lines above -- only shown once
    both are simultaneously visible (see updateStepConnector in app.js,
    which also positions/sizes this: no ancestor here is a fixed size or
    shares one with both endpoints, so this is JS-measured against each
-   line's own getBoundingClientRect() rather than a CSS-only span).
+   line's own getBoundingClientRect() rather than a CSS-only span, and
+   re-measured live while .start-panel is open since its own content
+   changing height -- e.g. granting live audio -- shifts ➁ along with
+   it). Runs from the center of ➀'s own bottom edge to the center of
+   ➁'s own top edge, not edge-to-edge of the two lines' full height.
    Sits absolutely against the page itself (no positioned ancestor
    needed) since its two endpoints live in different containers
    (.start-fractalizing-step in .hero, [data-pick-image-step] in main). */
