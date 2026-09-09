@@ -173,14 +173,17 @@
     // liveaudiostatechange fires whenever this panel's own live-audio
     // state becomes definitively known -- true once enable actually
     // succeeds, false on denial/disconnect/explicit uncheck/any other
-    // panel's own stop (see fractalize-core.js). Drives the button's
-    // two-stage label/behavior: "Use Live Audio Input" (not yet
-    // active, clicking requests it) vs "Start Live Audio Input"
-    // (already active, clicking proceeds).
+    // panel's own stop (see fractalize-core.js), so this reflects the
+    // real, granted browser permission state, not just "was clicked".
+    // Drives the button's two-stage label/color: "Use Live Audio
+    // Input" (not yet active, clicking requests it) vs "Live Audio In
+    // Use" in #00CC4F (already active, clicking proceeds -- see
+    // .start-panel-live-audio-btn.is-active in styles.css).
     let liveAudioActive = false;
     startPanelLiveAudioPanel.addEventListener("liveaudiostatechange", (e) => {
       liveAudioActive = e.detail.active;
-      startPanelLiveAudioBtn.textContent = liveAudioActive ? "Start Live Audio Input" : "Use Live Audio Input";
+      startPanelLiveAudioBtn.textContent = liveAudioActive ? "Live Audio In Use" : "Use Live Audio Input";
+      startPanelLiveAudioBtn.classList.toggle("is-active", liveAudioActive);
       // Granting live audio reveals the panel's own device-picker/
       // waveform row, changing .start-panel's height -- and so ➁'s own
       // position, since it sits right after the panel. Deferred a frame
@@ -238,9 +241,18 @@
     // close path), since they're this flow's permanent progress trail
     // once reached, not just this one open/close cycle's own state.
     function closeStartPanel(keepProgress) {
-      startPanel.hidden = true;
       startBtn.setAttribute("aria-expanded", "false");
-      if (keepProgress) return;
+      if (keepProgress) {
+        // Collapses in place instead of disappearing -- only the
+        // live-audio button itself (now showing its "in use"/green
+        // state, see .start-panel.is-collapsed in styles.css) stays
+        // visible, a persistent confirmation rather than the whole
+        // setup panel sticking around once its job is done.
+        startPanel.classList.add("is-collapsed");
+        return;
+      }
+      startPanel.hidden = true;
+      startPanel.classList.remove("is-collapsed");
       startBtn.hidden = false;
       if (startFractalizingHeader) startFractalizingHeader.hidden = true;
       if (startFractalizingStep) {
@@ -293,7 +305,6 @@
       launchRandomFractal();
     });
 
-    const uploadsHeading = document.querySelector("[data-uploads-heading]");
     if (pickImageBtn && photoCollection) {
       pickImageBtn.addEventListener("click", () => {
         photoCollection.hidden = false;
@@ -310,19 +321,19 @@
         if (startFractalizingStep) startFractalizingStep.classList.remove("is-current");
         if (pickImageMarker) pickImageMarker.classList.add("is-current");
         // Deferred a frame for the same reason openStartPanel's own
-        // scroll is -- lets the reflow from unhiding/closing settle
+        // scroll is -- lets the reflow from unhiding/collapsing settle
         // first (the step-connector needs that same settled layout to
-        // measure against -- .start-panel just closed, which moves ➁
-        // up, so this re-measure matters here specifically).
-        // block:'start' here, not 'nearest': unlike that scroll, the
-        // point IS to move attention well down the page, to a section
-        // that's currently entirely offscreen. Scrolls to the "Your
-        // Uploads" heading specifically, not just .photo-collection's
-        // own top edge (same position in practice today, but this is
-        // the thing a visitor should actually land looking at).
+        // measure against -- .start-panel just collapsed, which moves
+        // ➁ up, so this re-measure matters here specifically). Scrolls
+        // back up to ➀'s own line -- .start-panel collapsing to just
+        // its live-audio button, right underneath, is the thing to
+        // actually confirm here, not the collection further down
+        // (already revealed, just not what's brought into view).
         requestAnimationFrame(() => {
           updateStepConnector();
-          (uploadsHeading || photoCollection).scrollIntoView({ behavior: "smooth", block: "start" });
+          if (startFractalizingStep) {
+            startFractalizingStep.scrollIntoView({ behavior: "smooth", block: "start" });
+          }
         });
       });
     }

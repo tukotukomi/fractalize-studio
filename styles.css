@@ -206,6 +206,11 @@ a {
   text-align: left;
   font-size: 0.95rem;
   color: rgba(255, 255, 255, 0.75);
+  /* Matches .start-fractalizing-header's own fix -- app.js scrolls
+     directly to ➀ once PICK YOUR IMAGE is clicked, and by then
+     .sticky-nav (~57px tall) is already visible, fixed over the true
+     viewport top. */
+  scroll-margin-top: 72px;
 }
 
 /* Whichever step is the one actually in progress right now (see
@@ -532,6 +537,21 @@ main {
   margin-bottom: 16px;
 }
 
+/* Set once live audio is actually granted (see app.js's
+   liveaudiostatechange listener, which only ever fires this once a
+   real grant lands, never just on click) -- a clear "already on"
+   signal replacing the button's own default white pill look. Text
+   stays #111, the same weight the white default already relies on for
+   contrast. */
+.start-panel-live-audio-btn.is-active {
+  background: #00cc4f;
+  border-color: #00cc4f;
+}
+
+.start-panel-live-audio-btn.is-active:hover {
+  background: #00b846;
+}
+
 /* The two instruction lines sit between the two buttons rather than
    using .live-audio-help-step's own trailing margin (meant for a
    checkbox row directly after, not another full-width button several
@@ -570,6 +590,22 @@ main {
 .start-panel-skip-btn.is-link:hover {
   background: none;
   color: #fff;
+}
+
+/* Added once PICK YOUR IMAGE is actually clicked (see app.js's
+   closeStartPanel) -- the panel collapses to just its live-audio
+   button (by then in its own .is-active state above, a persistent
+   "audio's on" confirmation) instead of disappearing outright.
+   Padding/background/border stay the same as the full panel; only its
+   other children go away. */
+.start-panel.is-collapsed .live-audio-help-step,
+.start-panel.is-collapsed [data-live-audio-panel],
+.start-panel.is-collapsed .start-panel-skip-btn {
+  display: none;
+}
+
+.start-panel.is-collapsed .start-panel-live-audio-btn {
+  margin-bottom: 0;
 }
 
 /* --- Footer ----------------------------------------------------------- */
