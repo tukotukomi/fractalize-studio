@@ -343,25 +343,29 @@ a {
   color: #fff;
 }
 
-/* A second reminder riding along .sticky-nav's own bottom edge (see
-   its own comment in index.html) -- absolutely positioned against
-   .sticky-nav itself (the nearest positioned ancestor) rather than a
-   fixed sibling of its own, so it never needs to know that bar's own
-   height (intrinsic, not a fixed px value) to line up flush against
-   it. translateY(100%) when hidden pushes it down by its own height,
-   just out of view below the nav's own bottom edge -- .is-visible
-   (toggled by app.js) pulls it back up to its natural resting spot at
-   bottom:0, the same slide motion .sticky-nav itself uses for its own
-   show/hide. */
+/* A second reminder riding directly below .sticky-nav (see its own
+   comment in index.html) -- absolutely positioned against .sticky-nav
+   itself (the nearest positioned ancestor) rather than a fixed sibling
+   of its own, so it never needs to know that bar's own height
+   (intrinsic, not a fixed px value) to line up flush against it.
+   top:100% (not bottom:0, which used to sit this INSIDE the nav's own
+   box, overlapping "FRACTALIZE STUDIO" itself since the nav is barely
+   taller than this banner's own 24px) anchors its own top edge to the
+   nav's bottom edge, so it extends downward from there instead --
+   locked directly beneath the header, never over it. translateY(-100%)
+   when hidden tucks it back up by its own height, out of view (behind
+   the now-opaque nav, where it doesn't matter since opacity is 0 too)
+   -- .is-visible (toggled by app.js) slides it down to its natural
+   resting spot right below. */
 .sticky-audio-banner {
   position: absolute;
   left: 0;
   right: 0;
-  bottom: 0;
+  top: 100%;
   height: 24px;
   background: #eee8ae;
   opacity: 0;
-  transform: translateY(100%);
+  transform: translateY(-100%);
   transition: opacity 0.25s ease, transform 0.25s ease;
   pointer-events: none;
   overflow: hidden;
