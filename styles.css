@@ -739,7 +739,11 @@ main {
 
 .photo-preview-frame {
   position: relative;
-  width: min(90vw, 480px);
+  /* Bounded by vh too, not just vw -- being square, an image sized off
+     width alone would overflow the top/bottom edge on any viewport
+     short enough that 90vw exceeds 100vh (a wide/short window, not just
+     narrow/tall mobile). */
+  width: min(90vw, 90vh, 480px);
   aspect-ratio: 1;
   border-radius: 16px;
   overflow: hidden;
