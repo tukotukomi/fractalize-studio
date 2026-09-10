@@ -167,6 +167,7 @@
 
   if (startBtn && startPanel) {
     const startPanelLiveAudioBtn = document.querySelector("[data-start-panel-live-audio-btn]");
+    const startPanelStopBtn = document.querySelector("[data-start-panel-stop]");
     const startPanelSkipBtn = document.querySelector("[data-start-panel-skip]");
     const startPanelCheckbox = startPanel.querySelector('[data-toggle="liveAudio"]');
     const startPanelLiveAudioPanel = startPanel.querySelector("[data-live-audio-panel]");
@@ -188,6 +189,11 @@
       liveAudioActive = e.detail.active;
       startPanelLiveAudioBtn.textContent = liveAudioActive ? "Live Audio In Use" : "Use Live Audio Input";
       startPanelLiveAudioBtn.classList.toggle("is-active", liveAudioActive);
+      // Only worth showing once there's actually a stream running to
+      // stop -- same condition .fractal-controls-audio-device itself
+      // reveals on (fractalize-core.js's own doing, not this listener),
+      // so the two show/hide together.
+      if (startPanelStopBtn) startPanelStopBtn.hidden = !liveAudioActive;
       // Granting live audio reveals the panel's own device-picker/
       // waveform row, changing .start-panel's height -- and so ➁'s own
       // position, since it sits right after the panel. Deferred a frame
@@ -195,6 +201,25 @@
       requestAnimationFrame(updateStepConnector);
       updateStickyAudioBanner();
     });
+
+    // Unchecking the real checkbox (rather than calling some bespoke
+    // "stop" of this button's own) routes through the exact same
+    // disableLiveAudio path fractalize-core.js already uses for a
+    // device disconnect or another panel's own stop -- stops the
+    // actual stream, and (via that function's own
+    // liveaudiostatechange dispatch) fires the listener right above,
+    // which is what actually reverts this button's text/color and
+    // hides this one again. Nothing else in this flow needs resetting:
+    // ➁ becoming reachable was always tied to clicking "Use Live Audio
+    // Input" itself, not to audio actually staying active (a visitor
+    // can already reach it via "Use Without Live Audio"), so stopping
+    // here doesn't take that back.
+    if (startPanelStopBtn) {
+      startPanelStopBtn.addEventListener("click", () => {
+        startPanelCheckbox.checked = false;
+        startPanelCheckbox.dispatchEvent(new Event("change", { bubbles: true }));
+      });
+    }
 
     // --- Sticky live-audio banner ---------------------------------------
     // A positive-state strip along .sticky-nav's own bottom edge (see its

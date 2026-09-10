@@ -752,6 +752,30 @@ main {
   background: #d1cc99;
 }
 
+/* Icon + "Stop Live Audio" side by side, centered -- .action-btn itself
+   has no display/gap of its own to handle that (its other use,
+   .start-panel-skip-btn, is text-only). Full width and bottom margin
+   match its two siblings in this panel (.start-panel-live-audio-btn/
+   .start-panel-skip-btn), even though it isn't one of the selectors
+   those set that on -- kept as its own rule since this button also
+   needs the flex/gap those two never do. */
+.start-panel-stop-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  margin: 0 0 16px;
+}
+
+/* display:flex above otherwise beats the browser's own default
+   [hidden]{display:none} UA rule at equal specificity -- re-assert it
+   explicitly, same fix .hero-cta[hidden] below uses for the same
+   reason. */
+.start-panel-stop-btn[hidden] {
+  display: none;
+}
+
 /* The two instruction lines sit between the two buttons rather than
    using .live-audio-help-step's own trailing margin (meant for a
    checkbox row directly after, not another full-width button several
