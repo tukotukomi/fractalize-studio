@@ -270,15 +270,15 @@ a {
   margin: 0;
 }
 
-/* 60px top (24px, then +36px) -- since .pick-image-row itself has no
-   padding/border of its own, this collapses through the row's own top
-   edge rather than growing the row's own box, so the marker beside it
-   (absolutely positioned, sized to the row) shifts down along with
-   the button instead of staying put while the button alone moves --
-   the whole row lands 60px further down, not just this button within
-   it. */
+/* 36px top (60px, pulled back 24px) -- since .pick-image-row itself
+   has no padding/border of its own, this collapses through the row's
+   own top edge rather than growing the row's own box, so the marker
+   beside it (absolutely positioned, sized to the row) shifts down
+   along with the button instead of staying put while the button alone
+   moves -- the whole row lands 36px further down, not just this
+   button within it. */
 .pick-image-row .hero-cta {
-  margin: 60px auto 0;
+  margin: 36px auto 0;
 }
 
 /* Added once PICK YOUR IMAGE's own job is done (see app.js) --
