@@ -490,7 +490,46 @@ main {
    per collection (cover photo, name, description), rather than every
    collection's own full row of thumbs all at once (too long a scroll with
    six collections' worth of photos). Only the collection actually clicked
-   expands to its own full grid, in [data-catalog-expanded] below. */
+   expands to its own full grid -- see .collection-slider below for how. */
+
+/* Two panels (the card grid, then [data-catalog-expanded]) sitting side
+   by side, only one ever actually visible -- overflow:hidden here clips
+   whichever isn't current. Scroll target once a card (or "All
+   Collections") is clicked (see app.js) -- matches every other
+   scroll-margin-top fix in this file, for the same reason: .sticky-nav
+   is already visible by the time that scroll finishes. */
+[data-collection-slider] {
+  overflow: hidden;
+  scroll-margin-top: 72px;
+}
+
+/* Twice the slider's own width (two 100%-wide panels side by side) --
+   sliding this by exactly half its own width (see .is-expanded below)
+   moves by exactly one panel's worth, i.e. the slider's own full width.
+   align-items:flex-start (not the flex default, stretch) so the two
+   panels -- almost never the same height -- don't force each other
+   tall; app.js's syncSliderHeight sets this track's own height to
+   whichever panel is actually current instead, since a plain flex row
+   has no "height: whichever child is visible" of its own. Transitions
+   both transform (the actual slide) and height together, so a switch
+   to a taller/shorter panel resizes smoothly alongside it rather than
+   snapping. */
+.collection-slider-track {
+  display: flex;
+  align-items: flex-start;
+  width: 200%;
+  transition: transform 0.35s ease, height 0.35s ease;
+}
+
+.collection-slider-track.is-expanded {
+  transform: translateX(-50%);
+}
+
+.collection-slider-panel {
+  flex: 0 0 50%;
+  min-width: 0;
+}
+
 .collection-cards {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
@@ -556,19 +595,6 @@ main {
   margin: 0 12px 12px;
   font-size: 0.78rem;
   color: rgba(255, 255, 255, 0.5);
-}
-
-/* Scroll target once a card above is clicked (see app.js) -- matches
-   every other scroll-margin-top fix in this file, for the same reason:
-   .sticky-nav is already visible by the time that scroll finishes. */
-[data-catalog-expanded] {
-  scroll-margin-top: 72px;
-}
-
-/* Same reasoning, the other direction -- scrolled to once "All
-   Collections" below is clicked. */
-[data-collection-cards] {
-  scroll-margin-top: 72px;
 }
 
 .catalog-back-btn {
