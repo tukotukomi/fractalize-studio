@@ -880,6 +880,15 @@ main {
   background: #eee8ae;
 }
 
+/* Was staying the plain fill color while the button underneath it
+   darkened to #d1cc99 on hover -- the label's own patch didn't track
+   that, so it visibly mismatched the rest of the button. Same darker
+   yellow, so the whole button (not just the parts the label doesn't
+   cover) reads consistently on hover. */
+[data-live-audio-confirm].is-active:hover [data-live-audio-confirm-label] {
+  background: #d1cc99;
+}
+
 /* --- Footer ----------------------------------------------------------- */
 
 .site-footer {

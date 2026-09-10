@@ -425,6 +425,43 @@
         });
       });
     }
+
+    // Lets a visitor back into step 1 (e.g. to switch microphones)
+    // without losing step 2's own progress -- exactly reverses
+    // PICK YOUR IMAGE's own effects above: the confirm button that
+    // replaced .start-panel hides again in favor of the real thing,
+    // .photo-collection closes, and ➀/➁'s own markers swap back to
+    // "step 1 in progress" (PICK YOUR IMAGE itself re-earns .is-done
+    // once clicked again, same forward handler as before -- nothing
+    // here is a one-way trip).
+    if (liveAudioConfirm && startPanel) {
+      liveAudioConfirm.addEventListener("click", () => {
+        liveAudioConfirm.hidden = true;
+        if (photoCollection) photoCollection.hidden = true;
+        startPanel.hidden = false;
+        // Reflects the actual, still-granted stream's current device
+        // selection -- same call openStartPanel makes for the same
+        // reason, just reopening here instead of opening for the first
+        // time.
+        window.FractalizeCore.syncLiveAudioPanel(startPanelLiveAudioPanel);
+        if (pickImageBtn) pickImageBtn.classList.remove("is-done");
+        if (startFractalizingStep) {
+          startFractalizingStep.classList.remove("is-complete");
+          startFractalizingStep.classList.add("is-current");
+        }
+        if (pickImageMarker) {
+          pickImageMarker.classList.remove("is-current");
+          pickImageMarker.textContent = "➁";
+          pickImageMarker.setAttribute("aria-hidden", "true");
+        }
+        requestAnimationFrame(() => {
+          updateStepConnector();
+          if (startFractalizingStep) {
+            startFractalizingStep.scrollIntoView({ behavior: "smooth", block: "start" });
+          }
+        });
+      });
+    }
   }
 
   // --- Photo collections: card grid, cross-fading into one at a time ----
