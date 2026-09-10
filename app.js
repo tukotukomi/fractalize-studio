@@ -381,13 +381,6 @@
     if (pickImageBtn && photoCollection) {
       pickImageBtn.addEventListener("click", () => {
         photoCollection.hidden = false;
-        // The card grid was already rendered at page load, while
-        // .photo-collection (an ancestor) was still hidden -- everything
-        // reported 0 scrollHeight then, so .collection-slider-track's
-        // own height (see syncSliderHeight) was set to 0px along with
-        // it. Resync now that it's actually laid out, or the grid would
-        // stay collapsed to that stale 0px despite having real content.
-        syncSliderHeight();
         closeStartPanel(true);
         // Its own job done -- the marker next to it (already showing,
         // see the live-audio click handler above) stays behind as this
@@ -434,22 +427,24 @@
     }
   }
 
-  // --- Photo collections: card grid, sliding into one at a time ---------
+  // --- Photo collections: card grid, cross-fading into one at a time ----
   // Landing spot once PICK YOUR IMAGE reveals .photo-collection -- with
   // six collections' worth of photos, showing every one's own full row of
   // thumbs at once (the old layout) made this section far too long to be
   // a reasonable first thing to land on. A card (cover photo, name,
-  // description) per collection instead; clicking one slides the whole
-  // .collection-slider-track left to reveal its own full thumbnail grid
-  // in the second panel (see .collection-slider's own comment in
-  // styles.css for how the slide itself works, and index.html's for why
-  // "Your Uploads" and a curated collection are handled by two separate
-  // sections within that second panel rather than one shared,
-  // rebuilt-every-time template).
+  // description) per collection instead; clicking one cross-fades the
+  // card grid out and its own full thumbnail grid in (see
+  // .collection-slider-panel's own comment in styles.css for how -- a
+  // horizontal slide shipped first, but reads jumpy once its own height
+  // animation is added to the mix, since the two panels are rarely the
+  // same height). See index.html's own comment for why "Your Uploads"
+  // and a curated collection are handled by two separate sections within
+  // the second panel rather than one shared, rebuilt-every-time
+  // template.
   const collectionSlider = document.querySelector("[data-collection-slider]");
-  const collectionTrack = document.querySelector("[data-collection-track]");
+  const cardsPanel = document.querySelector("[data-cards-panel]");
+  const expandedPanel = document.querySelector("[data-expanded-panel]");
   const collectionCardsEl = document.querySelector("[data-collection-cards]");
-  const catalogExpanded = document.querySelector("[data-catalog-expanded]");
   const catalogBackBtn = document.querySelector("[data-catalog-back]");
   const uploadsSection = document.querySelector("[data-uploads-catalog]");
   const uploadsRow = document.querySelector("[data-uploads-row]");
@@ -546,41 +541,27 @@
       card.addEventListener("click", () => openCuratedCollection(group));
       collectionCardsEl.appendChild(card);
     });
-    syncSliderHeight();
   }
 
-  // Keeps .collection-slider-track's own height matched to whichever
-  // panel is actually current -- a plain flex row would otherwise
-  // stretch both panels to the taller one's own height (see that
-  // class's own comment in styles.css), leaving a blank gap under
-  // whichever is shorter. Reads scrollHeight synchronously (not
-  // deferred) -- by the time this is ever called, whatever DOM change
-  // prompted it (a classList toggle, an innerHTML rebuild, a hidden
-  // flip) has already happened earlier in the same synchronous run, and
-  // reading a layout property like scrollHeight forces the browser to
-  // reflow first regardless.
-  function syncSliderHeight() {
-    if (!collectionTrack) return;
-    const activePanel = collectionTrack.classList.contains("is-expanded") ? catalogExpanded : collectionCardsEl;
-    if (activePanel) collectionTrack.style.height = activePanel.scrollHeight + "px";
-  }
-  // The card grid's own column count (auto-fill) responds to viewport
-  // width, which changes its own total height -- resyncs whichever
-  // panel is current so a stale, pre-resize pixel height doesn't clip
-  // or leave a gap under it.
-  window.addEventListener("resize", syncSliderHeight);
-
-  function showExpanded() {
-    if (!collectionSlider || !collectionTrack) return;
-    collectionTrack.classList.add("is-expanded");
-    syncSliderHeight();
+  // Cross-fades from whichever panel is currently .is-active to `panel`
+  // -- see .collection-slider-panel's own comment in styles.css for why
+  // that class alone (promoting `panel` to position:relative, demoting
+  // the other back to position:absolute) is enough: only the actually-
+  // in-flow panel contributes to the slider's own height, so it's
+  // already correct with no JS measuring involved, and the position
+  // swap lands instantly (not something CSS can transition) right as
+  // the opacity fade starts.
+  function showPanel(panel) {
+    if (!collectionSlider || !cardsPanel || !expandedPanel || !panel) return;
+    cardsPanel.classList.toggle("is-active", panel === cardsPanel);
+    expandedPanel.classList.toggle("is-active", panel === expandedPanel);
     requestAnimationFrame(() => collectionSlider.scrollIntoView({ behavior: "smooth", block: "start" }));
   }
 
   function openUploadsCollection() {
     if (uploadsSection) uploadsSection.hidden = false;
     if (curatedExpandedSection) curatedExpandedSection.hidden = true;
-    showExpanded();
+    showPanel(expandedPanel);
   }
 
   function openCuratedCollection(group) {
@@ -590,18 +571,16 @@
     curatedExpandedHeading.textContent = group.label;
     curatedExpandedRow.innerHTML = "";
     group.photos.forEach((photo) => curatedExpandedRow.appendChild(renderCuratedThumb(photo)));
-    showExpanded();
+    showPanel(expandedPanel);
   }
 
-  if (catalogBackBtn && collectionSlider && collectionTrack) {
+  if (catalogBackBtn && collectionSlider && cardsPanel && expandedPanel) {
     catalogBackBtn.addEventListener("click", () => {
-      collectionTrack.classList.remove("is-expanded");
       // A new/deleted upload while inside that collection changes its
       // own card -- refresh so it's not still showing a stale cover
-      // once back at the grid. Also resyncs the track's own height for
-      // the cards panel, now the current one again.
+      // once back at the grid.
       renderCollectionCards();
-      requestAnimationFrame(() => collectionSlider.scrollIntoView({ behavior: "smooth", block: "start" }));
+      showPanel(cardsPanel);
     });
   }
 

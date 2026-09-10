@@ -492,42 +492,45 @@ main {
    six collections' worth of photos). Only the collection actually clicked
    expands to its own full grid -- see .collection-slider below for how. */
 
-/* Two panels (the card grid, then [data-catalog-expanded]) sitting side
-   by side, only one ever actually visible -- overflow:hidden here clips
-   whichever isn't current. Scroll target once a card (or "All
-   Collections") is clicked (see app.js) -- matches every other
-   scroll-margin-top fix in this file, for the same reason: .sticky-nav
-   is already visible by the time that scroll finishes. */
+/* Two panels (the card grid, then [data-catalog-expanded]), cross-fading
+   rather than swapped in place -- position:relative here is what gives
+   the absolutely-positioned inactive panel below something to overlay;
+   overflow:hidden clips it if it's taller than whichever is active.
+   Scroll target once a card (or "All Collections") is clicked (see
+   app.js) -- matches every other scroll-margin-top fix in this file,
+   for the same reason: .sticky-nav is already visible by the time that
+   scroll finishes. */
 [data-collection-slider] {
+  position: relative;
   overflow: hidden;
   scroll-margin-top: 72px;
 }
 
-/* Twice the slider's own width (two 100%-wide panels side by side) --
-   sliding this by exactly half its own width (see .is-expanded below)
-   moves by exactly one panel's worth, i.e. the slider's own full width.
-   align-items:flex-start (not the flex default, stretch) so the two
-   panels -- almost never the same height -- don't force each other
-   tall; app.js's syncSliderHeight sets this track's own height to
-   whichever panel is actually current instead, since a plain flex row
-   has no "height: whichever child is visible" of its own. Transitions
-   both transform (the actual slide) and height together, so a switch
-   to a taller/shorter panel resizes smoothly alongside it rather than
-   snapping. */
-.collection-slider-track {
-  display: flex;
-  align-items: flex-start;
-  width: 200%;
-  transition: transform 0.35s ease, height 0.35s ease;
-}
-
-.collection-slider-track.is-expanded {
-  transform: translateX(-50%);
-}
-
+/* Inactive by default -- absolutely positioned (out of flow, so it
+   doesn't affect the slider's own height) and transparent. .is-active
+   below (toggled by app.js) is what actually promotes one to
+   position:relative, putting it back in normal flow -- since that's
+   the only panel now contributing to layout, the slider's own height
+   already matches it with no JS measuring a height property needed.
+   That promotion happens instantly (position isn't something CSS can
+   transition), right as the opacity fade starts -- only the crossfade
+   itself animates, not the height. pointer-events:none keeps the
+   invisible one from intercepting clicks meant for whatever's under/
+   around it. */
 .collection-slider-panel {
-  flex: 0 0 50%;
-  min-width: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.collection-slider-panel.is-active {
+  position: relative;
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .collection-cards {
