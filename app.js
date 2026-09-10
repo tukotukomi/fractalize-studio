@@ -564,8 +564,8 @@
   }
 
   if (photoPreviewOverlay) {
-    photoPreviewFractalBtn.innerHTML = FRACTAL_ICON;
-    photoPreviewVisualizeBtn.innerHTML = VISUALIZE_ICON;
+    photoPreviewFractalBtn.querySelector("[data-photo-preview-fractal-icon]").innerHTML = FRACTAL_ICON;
+    photoPreviewVisualizeBtn.querySelector("[data-photo-preview-visualize-icon]").innerHTML = VISUALIZE_ICON;
     // Only closes on a click landing directly on the backdrop itself --
     // .photo-preview-frame and its own children stop being "the
     // backdrop" simply by being a different element than e.target here,

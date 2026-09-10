@@ -13,7 +13,7 @@
        commit hash right before each commit that touches either file,
        so it's always one commit behind true HEAD. Worth revisiting
        once this page is more stable and shipping less often. -->
-  <link rel="stylesheet" href="styles.css?v=3dc6a2b">
+  <link rel="stylesheet" href="styles.css?v=64494f3">
   <link rel="stylesheet" href="fractalize-core/fractalize-core.css?v=3784e02">
 </head>
 <body>
@@ -285,20 +285,28 @@
        Fractal/Visualize buttons on each thumb (see app.js's
        openPhotoPreview/renderCuratedThumb/renderUploadThumb). A single
        shared overlay, reused for every thumb -- opened with whichever
-       photo was actually tapped. The two action buttons start empty;
-       app.js fills them with FRACTAL_ICON/VISUALIZE_ICON at startup so
-       the icon path data lives in one place, not duplicated here. -->
+       photo was actually tapped. Each action's own icon span starts
+       empty; app.js fills it with FRACTAL_ICON/VISUALIZE_ICON at
+       startup so the icon path data lives in one place, not duplicated
+       here -- the label text sits outside that span so refilling the
+       icon on startup never wipes it. -->
   <div class="photo-preview-overlay" data-photo-preview hidden>
     <div class="photo-preview-frame">
       <img class="photo-preview-img" data-photo-preview-img alt="">
-      <button type="button" class="photo-preview-action photo-preview-action-top" data-photo-preview-fractal aria-label="Open as fractal"></button>
-      <button type="button" class="photo-preview-action photo-preview-action-bottom" data-photo-preview-visualize aria-label="Visualize to music"></button>
+      <button type="button" class="photo-preview-action photo-preview-action-top" data-photo-preview-fractal aria-label="Open as fractal">
+        <span class="photo-preview-action-icon" data-photo-preview-fractal-icon></span>
+        <span class="photo-preview-action-label">Fractalize</span>
+      </button>
+      <button type="button" class="photo-preview-action photo-preview-action-bottom" data-photo-preview-visualize aria-label="Visualize to music">
+        <span class="photo-preview-action-icon" data-photo-preview-visualize-icon></span>
+        <span class="photo-preview-action-label">Liquid Rippler</span>
+      </button>
       <button type="button" class="photo-preview-close" data-photo-preview-close aria-label="Close preview">&times;</button>
     </div>
   </div>
 
   <script src="photo-catalog.js"></script>
   <script src="fractalize-core/fractalize-core.js?v=3784e02"></script>
-  <script src="app.js?v=d745872"></script>
+  <script src="app.js?v=64494f3"></script>
 </body>
 </html>
