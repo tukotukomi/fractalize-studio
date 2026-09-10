@@ -791,12 +791,22 @@ main {
   background-size: 400% 400%;
   animation: positive-state-animated 8s ease infinite;
   border-color: transparent;
+  /* Same list .hero-cta/.action-btn already declare, plus filter --
+     :hover below only adds filter, but transition is a shorthand (the
+     more specific rule here would otherwise replace the base classes'
+     own list outright, not merge into it), so the other two need
+     repeating here to keep working. */
+  transition: background-color 0.2s ease, transform 0.1s ease, filter 0.2s ease;
 }
 
-/* ~12% darker than the fill above -- same ratio the color this
-   replaced used for its own hover state. */
+/* A flat #d1cc99 used to replace the gradient outright on hover here --
+   swapped a still-image in for a moving one, so the animation visibly
+   froze for as long as the cursor stayed put. brightness() instead
+   darkens the ALREADY-ANIMATING gradient in place (a post-process over
+   the whole rendered element, gradient included) -- it keeps drifting
+   under the cursor, just dimmed, rather than pausing. */
 .start-panel-live-audio-btn.is-active:hover {
-  background: #d1cc99;
+  filter: brightness(0.85);
 }
 
 /* Icon + "Stop Live Audio" side by side, centered -- .action-btn itself
@@ -904,12 +914,25 @@ main {
   background-attachment: fixed;
   animation: positive-state-animated 8s ease infinite;
   border-color: transparent;
+  /* Same reasoning as .start-panel-live-audio-btn.is-active's own
+     comment -- repeats the base classes' own transition list (a
+     shorthand, so the more specific rule here would otherwise replace
+     it outright) plus filter, for the smooth hover darken below. */
+  transition: background-color 0.2s ease, transform 0.1s ease, filter 0.2s ease;
 }
 
-/* ~12% darker than the fill above -- same ratio the color this
-   replaced used for its own hover state. */
+/* Same reasoning as .start-panel-live-audio-btn.is-active:hover's own
+   comment -- brightness() darkens the already-animating gradient in
+   place instead of swapping a static color in over it, so it keeps
+   drifting under the cursor rather than freezing. A single post-
+   process filter over the whole rendered element, so it reaches the
+   waveform canvas and the label's own patch underneath too (both keep
+   their own separate filter/background unchanged -- this just darkens
+   the finished, composited result) -- no separate hover rule needed
+   for the label anymore the way its own background needed one before,
+   just to stay matched to this same darkening. */
 [data-live-audio-confirm].is-active:hover {
-  background: #d1cc99;
+  filter: brightness(0.85);
 }
 
 /* The live waveform meter, drawn directly onto this button (see its
@@ -971,15 +994,6 @@ main {
   background-size: 400% 400%;
   background-attachment: fixed;
   animation: positive-state-animated 8s ease infinite;
-}
-
-/* Was staying the plain fill color while the button underneath it
-   darkened to #d1cc99 on hover -- the label's own patch didn't track
-   that, so it visibly mismatched the rest of the button. Same darker
-   yellow, so the whole button (not just the parts the label doesn't
-   cover) reads consistently on hover. */
-[data-live-audio-confirm].is-active:hover [data-live-audio-confirm-label] {
-  background: #d1cc99;
 }
 
 /* --- Footer ----------------------------------------------------------- */
