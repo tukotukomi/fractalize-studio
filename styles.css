@@ -785,6 +785,11 @@ main {
 
 .photo-preview-action-top {
   top: 0;
+  /* Marks the split between the two tap zones -- lives on the top
+     half's own bottom edge (exactly the frame's midline, since both
+     halves are each exactly 50% tall) rather than a separate element,
+     so it never needs its own positioning. */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.6);
 }
 
 .photo-preview-action-bottom {
