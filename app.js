@@ -173,6 +173,17 @@
     const startPanelLiveAudioPanel = startPanel.querySelector("[data-live-audio-panel]");
 
     window.FractalizeCore.wireLiveAudioControls(startPanelLiveAudioPanel);
+    // Live audio here is page-level, persistent state -- this page's own
+    // "Live Audio In Use" button/banner reflect it independent of
+    // whether the fractal or visualizer happens to be open right now,
+    // unlike tuckermills.com's embedded instance (never calls this),
+    // where closing either view is normally also the end of that visit
+    // to a photo. A visitor here is far more likely to close one photo's
+    // fractal only to immediately reopen a different one from this same
+    // page -- without this, that would silently re-prompt for
+    // permission (or at minimum re-request the device) every single
+    // time.
+    window.FractalizeCore.setKeepLiveAudioOnClose(true);
 
     // liveaudiostatechange fires whenever this panel's own live-audio
     // state becomes definitively known -- true once enable actually
