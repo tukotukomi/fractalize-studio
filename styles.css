@@ -655,22 +655,16 @@ main {
   height: 100%;
   object-fit: cover;
   display: block;
+  cursor: pointer;
 }
 
-/* Always visible, not hover-revealed -- a hover-only "reveal on mouseover"
-   version shipped first and was invisible (and so untappable) on any
-   touch device, since there's no hover state to trigger it. Matches
-   tuckermills-portfolio's own fractal-cameraroll-thumb-actions, an
-   already-proven always-visible bottom bar. */
-.catalog-thumb-actions {
+/* Uploads-only: the one action that isn't "tap the image to preview it"
+   (see openPhotoPreview in app.js), so it stays a small standalone button
+   in the corner rather than living inside the preview popup. */
+.catalog-thumb-delete {
   position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  display: flex;
-  justify-content: space-between;
-  padding: 6px;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0));
+  top: 6px;
+  right: 6px;
 }
 
 .thumb-action {
@@ -715,6 +709,118 @@ main {
 
 .catalog-add-thumb svg {
   opacity: 0.8;
+}
+
+/* --- Photo preview popup ------------------------------------------------ */
+/* Tap-to-open replacement for the old always-visible small Fractal/
+   Visualize buttons on each thumb -- see openPhotoPreview and the
+   rewritten renderCuratedThumb/renderUploadThumb in app.js. One shared
+   overlay reused for every thumb; z-index sits above .sticky-nav's own
+   500 but below the fractal engine's own 3100, since the two are never
+   open at the same time regardless. */
+.photo-preview-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(0, 0, 0, 0.85);
+}
+
+/* display:flex above otherwise beats the browser's own default
+   [hidden]{display:none} UA rule at equal specificity -- re-assert it
+   explicitly, same fix .hero-cta[hidden]/.start-panel-stop-btn[hidden]
+   above use for the same reason. */
+.photo-preview-overlay[hidden] {
+  display: none;
+}
+
+.photo-preview-frame {
+  position: relative;
+  width: min(90vw, 480px);
+  aspect-ratio: 1;
+  border-radius: 16px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.photo-preview-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Each half is its own full-width tap target -- 60%-black over the
+   image per the spec, brightening slightly on hover as the only
+   affordance that it's tappable (matches .thumb-action's own hover
+   treatment elsewhere in this file). */
+.photo-preview-action {
+  appearance: none;
+  -webkit-appearance: none;
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: rgba(0, 0, 0, 0.6);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.photo-preview-action:hover {
+  background: rgba(0, 0, 0, 0.72);
+}
+
+.photo-preview-action-top {
+  top: 0;
+}
+
+.photo-preview-action-bottom {
+  bottom: 0;
+}
+
+/* Overrides FRACTAL_ICON/VISUALIZE_ICON's own inline fill="#111" --
+   app.js injects those strings as-is (see index.html's own comment) so
+   their path data stays in one place; a presentation attribute like
+   that carries no real specificity and loses to this rule. */
+.photo-preview-action svg {
+  width: 48px;
+  height: 48px;
+  fill: #fff;
+}
+
+/* Sits after the two action buttons in the DOM (see index.html) so it
+   paints above their full-half tap targets despite all three sharing
+   the same z-index:auto stacking context. */
+.photo-preview-close {
+  appearance: none;
+  -webkit-appearance: none;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  font-size: 26px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.photo-preview-close:hover {
+  background: rgba(0, 0, 0, 0.8);
 }
 
 /* --- "Start fractalizing" panel ----------------------------------------- */

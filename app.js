@@ -534,6 +534,56 @@
   const VISUALIZE_ICON =
     '<svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="16px" fill="#111"><path d="M852-212 732-332l56-56 120 120-56 56ZM708-692l-56-56 120-120 56 56-120 120Zm-456 0L132-812l56-56 120 120-56 56ZM108-212l-56-56 120-120 56 56-120 120Zm246-75 126-76 126 77-33-144 111-96-146-13-58-136-58 135-146 13 111 97-33 143ZM233-120l65-281L80-590l288-25 112-265 112 265 288 25-218 189 65 281-247-149-247 149Zm247-361Z"/></svg>';
 
+  // Tap-to-open preview: one shared overlay reused by every thumb (see
+  // renderCuratedThumb/renderUploadThumb below) instead of the old
+  // always-visible small Fractal/Visualize buttons. The markup lives in
+  // index.html; the two action buttons start empty there and get their
+  // icon filled in once here, reusing FRACTAL_ICON/VISUALIZE_ICON above
+  // rather than duplicating their path data in index.html too (styles.css
+  // overrides the icons' own inline fill for the larger, white-on-dark
+  // look this popup needs).
+  const photoPreviewOverlay = document.querySelector("[data-photo-preview]");
+  const photoPreviewImg = document.querySelector("[data-photo-preview-img]");
+  const photoPreviewFractalBtn = document.querySelector("[data-photo-preview-fractal]");
+  const photoPreviewVisualizeBtn = document.querySelector("[data-photo-preview-visualize]");
+  const photoPreviewCloseBtn = document.querySelector("[data-photo-preview-close]");
+  let photoPreviewHandlers = null;
+
+  function openPhotoPreview(src, handlers) {
+    if (!photoPreviewOverlay) return;
+    photoPreviewHandlers = handlers;
+    photoPreviewImg.src = src;
+    photoPreviewOverlay.hidden = false;
+  }
+
+  function closePhotoPreview() {
+    if (!photoPreviewOverlay) return;
+    photoPreviewOverlay.hidden = true;
+    photoPreviewImg.src = "";
+    photoPreviewHandlers = null;
+  }
+
+  if (photoPreviewOverlay) {
+    photoPreviewFractalBtn.innerHTML = FRACTAL_ICON;
+    photoPreviewVisualizeBtn.innerHTML = VISUALIZE_ICON;
+    // Only closes on a click landing directly on the backdrop itself --
+    // .photo-preview-frame and its own children stop being "the
+    // backdrop" simply by being a different element than e.target here,
+    // no stopPropagation() needed on any of them.
+    photoPreviewOverlay.addEventListener("click", (e) => {
+      if (e.target === photoPreviewOverlay) closePhotoPreview();
+    });
+    photoPreviewCloseBtn.addEventListener("click", closePhotoPreview);
+    photoPreviewFractalBtn.addEventListener("click", () => {
+      if (photoPreviewHandlers) photoPreviewHandlers.onFractal();
+      closePhotoPreview();
+    });
+    photoPreviewVisualizeBtn.addEventListener("click", () => {
+      if (photoPreviewHandlers) photoPreviewHandlers.onVisualize();
+      closePhotoPreview();
+    });
+  }
+
   // A plain thumb, no delete action -- only an upload (its own
   // renderUploadThumb below) can ever be removed. Shared by every
   // curated collection's own expanded row, rebuilt fresh each time one
@@ -541,21 +591,12 @@
   function renderCuratedThumb(photo) {
     const thumb = document.createElement("div");
     thumb.className = "catalog-thumb";
-    thumb.innerHTML =
-      '<img src="' + photo.thumbSrc + '" alt="" loading="lazy" decoding="async" width="200" height="200">' +
-      '<div class="catalog-thumb-actions">' +
-      '<button type="button" class="thumb-action" data-action="fractal" aria-label="Open as fractal">' +
-      FRACTAL_ICON +
-      "</button>" +
-      '<button type="button" class="thumb-action" data-action="visualize" aria-label="Visualize to music">' +
-      VISUALIZE_ICON +
-      "</button>" +
-      "</div>";
-    thumb.querySelector('[data-action="fractal"]').addEventListener("click", () => {
-      window.FractalizeCore.openFractal(photo.src);
-    });
-    thumb.querySelector('[data-action="visualize"]').addEventListener("click", () => {
-      window.FractalizeCore.openVisualizer(photo.src);
+    thumb.innerHTML = '<img src="' + photo.thumbSrc + '" alt="" loading="lazy" decoding="async" width="200" height="200">';
+    thumb.querySelector("img").addEventListener("click", () => {
+      openPhotoPreview(photo.src, {
+        onFractal: () => window.FractalizeCore.openFractal(photo.src),
+        onVisualize: () => window.FractalizeCore.openVisualizer(photo.src),
+      });
     });
     return thumb;
   }
@@ -744,22 +785,14 @@
     thumb.className = "catalog-thumb";
     thumb.innerHTML =
       '<img src="' + url + '" alt="" loading="lazy" decoding="async" width="200" height="200">' +
-      '<div class="catalog-thumb-actions">' +
-      '<button type="button" class="thumb-action" data-action="fractal" aria-label="Open as fractal">' +
-      FRACTAL_ICON +
-      "</button>" +
-      '<button type="button" class="thumb-action" data-action="visualize" aria-label="Visualize to music">' +
-      VISUALIZE_ICON +
-      "</button>" +
-      '<button type="button" class="thumb-action" data-action="delete" aria-label="Delete this upload">' +
+      '<button type="button" class="thumb-action catalog-thumb-delete" data-action="delete" aria-label="Delete this upload">' +
       DELETE_ICON +
-      "</button>" +
-      "</div>";
-    thumb.querySelector('[data-action="fractal"]').addEventListener("click", () => {
-      window.FractalizeCore.openFractal(url, { persistQueue: false });
-    });
-    thumb.querySelector('[data-action="visualize"]').addEventListener("click", () => {
-      window.FractalizeCore.openVisualizer(url);
+      "</button>";
+    thumb.querySelector("img").addEventListener("click", () => {
+      openPhotoPreview(url, {
+        onFractal: () => window.FractalizeCore.openFractal(url, { persistQueue: false }),
+        onVisualize: () => window.FractalizeCore.openVisualizer(url),
+      });
     });
     thumb.querySelector('[data-action="delete"]').addEventListener("click", () => {
       deleteUploadedPhoto(record.id).then(() => {

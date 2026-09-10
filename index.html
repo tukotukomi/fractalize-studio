@@ -13,7 +13,7 @@
        commit hash right before each commit that touches either file,
        so it's always one commit behind true HEAD. Worth revisiting
        once this page is more stable and shipping less often. -->
-  <link rel="stylesheet" href="styles.css?v=0e3874e">
+  <link rel="stylesheet" href="styles.css?v=d745872">
   <link rel="stylesheet" href="fractalize-core/fractalize-core.css?v=3784e02">
 </head>
 <body>
@@ -281,8 +281,24 @@
     <p>Curated photos from <a href="https://www.tuckermills.com" target="_blank" rel="noopener">tuckermills.com</a>. Your own uploads never leave your browser.</p>
   </footer>
 
+  <!-- Tap-to-open preview: replaces the old always-visible small
+       Fractal/Visualize buttons on each thumb (see app.js's
+       openPhotoPreview/renderCuratedThumb/renderUploadThumb). A single
+       shared overlay, reused for every thumb -- opened with whichever
+       photo was actually tapped. The two action buttons start empty;
+       app.js fills them with FRACTAL_ICON/VISUALIZE_ICON at startup so
+       the icon path data lives in one place, not duplicated here. -->
+  <div class="photo-preview-overlay" data-photo-preview hidden>
+    <div class="photo-preview-frame">
+      <img class="photo-preview-img" data-photo-preview-img alt="">
+      <button type="button" class="photo-preview-action photo-preview-action-top" data-photo-preview-fractal aria-label="Open as fractal"></button>
+      <button type="button" class="photo-preview-action photo-preview-action-bottom" data-photo-preview-visualize aria-label="Visualize to music"></button>
+      <button type="button" class="photo-preview-close" data-photo-preview-close aria-label="Close preview">&times;</button>
+    </div>
+  </div>
+
   <script src="photo-catalog.js"></script>
   <script src="fractalize-core/fractalize-core.js?v=3784e02"></script>
-  <script src="app.js?v=0e3874e"></script>
+  <script src="app.js?v=d745872"></script>
 </body>
 </html>
