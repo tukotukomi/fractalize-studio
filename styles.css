@@ -742,15 +742,46 @@ main {
   margin-bottom: 16px;
 }
 
+/* Green/blue/yellow sampled directly from .hero-banner's own footage
+   (a canvas-sampled average of each hue's most saturated pixels across
+   several frames, the blue then lightened to match the other two's own
+   lightness -- the real sampled blue was much darker, which would have
+   fought #111 text's own contrast partway through the cycle). Slides
+   through a 400%-oversized copy of itself rather than animating the
+   gradient's own colors directly (not something CSS can do) --
+   background-position 0%->100%->0% on that oversized layer reads as
+   continuous, directionless drift, and returns to its own exact
+   starting value every loop, so `infinite` restarts with no visible
+   jump. */
+@keyframes positive-state-animated {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
 /* Set once live audio is actually granted (see app.js's
    liveaudiostatechange listener, which only ever fires this once a
    real grant lands, never just on click) -- a clear "already on"
-   signal replacing the button's own default white pill look. Text
-   stays #111, the same weight the white default already relies on for
-   contrast. */
+   signal replacing the button's own default white pill look, now
+   animated (see positive-state-animated above) rather than a flat
+   fill -- part of making the page read as more alive while a live
+   session is actually running. Text stays #111, the same weight the
+   white default already relies on for contrast -- every stop in the
+   gradient is light enough to keep that working throughout the loop,
+   not just at rest. border-color: transparent instead of matching the
+   fill (there's no one fill color to match anymore) -- same net
+   effect, an invisible border seam. */
 .start-panel-live-audio-btn.is-active {
-  background: #eee8ae;
-  border-color: #eee8ae;
+  background: linear-gradient(-45deg, #b0d1ca, #9dced2, #e0e3c2, #b0d1ca);
+  background-size: 400% 400%;
+  animation: positive-state-animated 8s ease infinite;
+  border-color: transparent;
 }
 
 /* ~12% darker than the fill above -- same ratio the color this
@@ -848,11 +879,22 @@ main {
 }
 
 /* Same "already on" look .start-panel-live-audio-btn.is-active above
-   uses, duplicated here rather than shared -- this button isn't a
-   .start-panel-live-audio-btn, so that selector doesn't reach it. */
+   uses (including the positive-state-animated gradient itself),
+   duplicated here rather than shared -- this button isn't a
+   .start-panel-live-audio-btn, so that selector doesn't reach it.
+   background-attachment: fixed (not needed on that other button, which
+   has no overlapping child of its own to line up with) is what makes
+   this one and its own label below -- see that rule's comment --
+   sample the exact same gradient layer, positioned against the
+   viewport instead of each element's own, differently-sized box, so
+   the label's patch reads as a true continuation of what's under it
+   instead of a visibly separate rectangle drifting out of step. */
 [data-live-audio-confirm].is-active {
-  background: #eee8ae;
-  border-color: #eee8ae;
+  background: linear-gradient(-45deg, #b0d1ca, #9dced2, #e0e3c2, #b0d1ca);
+  background-size: 400% 400%;
+  background-attachment: fixed;
+  animation: positive-state-animated 8s ease infinite;
+  border-color: transparent;
 }
 
 /* ~12% darker than the fill above -- same ratio the color this
@@ -907,8 +949,19 @@ main {
    over the waveform trace directly behind the text's own line box,
    so the moving line never cuts through the letters themselves --
    everywhere else on the button the trace still shows through. */
+/* Same positive-state-animated gradient the button itself uses (see
+   its own comment above), including background-attachment: fixed --
+   with matching background-size and the same animation running in
+   phase (same class toggle, same moment, same keyframes/duration),
+   that makes this patch sample the exact same gradient layer, at the
+   exact same viewport-relative position, as the button underneath it
+   -- a true continuation of it rather than a visibly separate
+   rectangle drifting out of step. */
 [data-live-audio-confirm].is-active [data-live-audio-confirm-label] {
-  background: #eee8ae;
+  background: linear-gradient(-45deg, #b0d1ca, #9dced2, #e0e3c2, #b0d1ca);
+  background-size: 400% 400%;
+  background-attachment: fixed;
+  animation: positive-state-animated 8s ease infinite;
 }
 
 /* Was staying the plain fill color while the button underneath it
