@@ -363,14 +363,23 @@ a {
    when hidden tucks it back up by its own height, out of view (behind
    the now-opaque nav, where it doesn't matter since opacity is 0 too)
    -- .is-visible (toggled by app.js) slides it down to its natural
-   resting spot right below. */
+   resting spot right below. Same positive-state-animated gradient the
+   live-audio buttons themselves use (see that keyframes' own comment)
+   -- no background-attachment:fixed here the way those buttons' own
+   label patch needed, since there's no overlapping sibling of its own
+   to stay in sync with. animation runs continuously regardless of
+   .is-visible -- cheap (just a repainted gradient, no layout), and
+   keeps it already mid-motion instead of restarting fresh every time
+   it's revealed. */
 .sticky-audio-banner {
   position: absolute;
   left: 0;
   right: 0;
   top: 100%;
   height: 24px;
-  background: #eee8ae;
+  background: linear-gradient(-45deg, #b0d1ca, #9dced2, #e0e3c2, #b0d1ca);
+  background-size: 400% 400%;
+  animation: positive-state-animated 8s ease infinite;
   opacity: 0;
   transform: translateY(-100%);
   transition: opacity 0.25s ease, transform 0.25s ease;
