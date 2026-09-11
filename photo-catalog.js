@@ -12,6 +12,8 @@
 // "https://www.tuckermills.com/", and skip any filename listed in that
 // collection's own `portfolioPrivate` array (none exist as of this
 // snapshot -- every photo below is public on tuckermills.com too).
+// Last regenerated from tuckermills-portfolio commit 5b82101 (adds the
+// Colors & Lights collection and new photos across four others).
 window.FRACTALIZE_CATALOG = (function () {
   const TUCKERMILLS_ORIGIN = "https://www.tuckermills.com/";
   const GALLERIES = [
@@ -30,6 +32,13 @@ window.FRACTALIZE_CATALOG = (function () {
         "macro-09.jpg",
         "macro-10.jpg",
         "IMG_20180721_162815.jpg",
+        "000538810019.jpg",
+        "000538810034.jpg",
+        "000849230010.jpg",
+        "000849240033.jpg",
+        "000849260001.jpg",
+        "000849260002.jpg",
+        "000849260017.jpg",
       ],
     },
     {
@@ -48,6 +57,22 @@ window.FRACTALIZE_CATALOG = (function () {
         "12.jpg",
         "21.jpg",
         "23.jpg",
+        "img007.jpg",
+        "img009-1.jpg",
+        "img010.jpg",
+        "img013.jpg",
+        "img014.jpg",
+        "img016.jpg",
+        "img018-1.jpg",
+        "img018-2.jpg",
+        "img019-1.jpg",
+        "img019-2.jpg",
+        "img020.jpg",
+        "img022.jpg",
+        "img023.jpg",
+        "img024.jpg",
+        "img026.jpg",
+        "img033.jpg",
       ],
     },
     {
@@ -62,12 +87,47 @@ window.FRACTALIZE_CATALOG = (function () {
         "000042.jpg",
         "000043.jpg",
         "000046.jpg",
+        "000056.jpg",
+        "img007.jpg",
+        "img022.jpg",
+        "img023.jpg",
       ],
     },
     {
       label: "Travels in Color",
       folder: "Images/Photography/Collections/color-travels/",
-      images: ["banner-2.jpg", "000293960002.jpg", "000293960030.jpg", "000294510012.jpg"],
+      images: [
+        "banner-2.jpg",
+        "000293960002.jpg",
+        "000293960030.jpg",
+        "000294510012.jpg",
+        "000538800009.jpg",
+        "000538800015.jpg",
+        "000849220005.jpg",
+        "000849220009.jpg",
+        "000849220026.jpg",
+        "000849240018.jpg",
+        "000849250020.jpg",
+        "000849250021.jpg",
+        "000849260012.jpg",
+        "img015.jpg",
+        "img018.jpg",
+        "img026.jpg",
+        "img027.jpg",
+        "img063.jpg",
+      ],
+    },
+    {
+      label: "Colors & Lights",
+      folder: "Images/Photography/Collections/Colors & Lights/",
+      images: [
+        "000483810015.jpg",
+        "000483810017.jpg",
+        "000483810020.jpg",
+        "000483810028.jpg",
+        "img011.jpg",
+        "img012.jpg",
+      ],
     },
     {
       label: "Unsorted",
