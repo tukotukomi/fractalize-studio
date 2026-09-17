@@ -410,7 +410,14 @@
     function updateStickyAudioBanner() {
       if (!stickyAudioBanner) return;
       const confirmButtonClear = currentPage !== "start" || scrolledPastLiveAudioConfirm;
-      stickyAudioBanner.classList.toggle("is-visible", liveAudioActive && confirmButtonClear);
+      const visible = liveAudioActive && confirmButtonClear;
+      stickyAudioBanner.classList.toggle("is-visible", visible);
+      // Body-level, not scoped to .fractal-gallery specifically -- any
+      // page whose own content can land flush under .sticky-nav (see
+      // .fractal-gallery's own padding-top comment in styles.css) reads
+      // this the same way, so a future page added there doesn't need
+      // its own copy of this toggle.
+      document.body.classList.toggle("has-audio-banner", visible);
     }
     // showPage passes the page it's switching TO -- arriving at "start"
     // always lands at scrollY 0 (see showPage itself), which by

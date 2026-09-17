@@ -1268,8 +1268,25 @@ main {
      above it. scroll-margin-top can't create clearance the page has no
      room to scroll into; only real padding-top can push this content
      down clear of .sticky-nav (~57px tall, always visible on this page
-     now) regardless of scroll position. */
+     now) regardless of scroll position. Transitions alongside the
+     banner's own 0.25s fade below so a mid-visit state change (a
+     device disconnecting, say) doesn't make the title jump instantly. */
   padding-top: 72px;
+  transition: padding-top 0.25s ease;
+}
+
+/* .has-audio-banner (toggled by app.js's updateStickyAudioBanner
+   alongside .sticky-audio-banner's own is-visible, see index.html's
+   comment on that element) means the banner is riding directly below
+   .sticky-nav right now -- its own 24px extends the chrome height
+   .fractal-gallery's base padding-top above already clears, so this
+   page's title would otherwise sit half-hidden underneath it. Scoped
+   to body, not this class alone, so a future page with the same
+   "first thing in document flow" padding-top problem (see that rule's
+   own comment) only needs to add its own selector here, not repeat
+   this whole mechanism. */
+body.has-audio-banner .fractal-gallery {
+  padding-top: 96px;
 }
 
 .fractal-gallery-title {
