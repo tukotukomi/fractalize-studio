@@ -110,6 +110,20 @@
   // index.html) update together.
   const appHome = document.querySelector("[data-app-home]");
   const fractalGallery = document.querySelector("[data-fractal-gallery]");
+  // Read by updateStickyAudioBanner below (a later, nested closure --
+  // sticky-audio-banner's own visibility depends on which page is
+  // showing, not just scroll position, once there's more than one) --
+  // and set here rather than passed around, since showPage is the one
+  // place a page change actually happens. Starts "start" to match
+  // .app-home being the one NOT hidden in the static markup.
+  let currentPage = "start";
+  // Assigned once updateStickyAudioBanner itself is defined further
+  // down (same "expose a nested closure's function via an outer `let`"
+  // pattern fractalize-core.js's own cameraRollStartShuffleTimer uses)
+  // -- lets showPage refresh the banner's own visibility the instant a
+  // page changes, rather than waiting for the next scroll/resize to
+  // happen to re-run it.
+  let refreshStickyAudioBanner = null;
 
   function setActiveNavLink(name) {
     document.querySelectorAll("[data-nav-link]").forEach((link) => {
@@ -119,6 +133,7 @@
   }
 
   function showPage(name) {
+    currentPage = name;
     setActiveNavLink(name);
     if (name === "gallery" && fractalGallery && appHome) {
       appHome.hidden = true;
@@ -156,6 +171,13 @@
       if (stickyNav) stickyNav.classList.remove("is-visible");
       window.scrollTo(0, 0);
     }
+    // Live audio (if active) keeps running across a page switch --
+    // setKeepLiveAudioOnClose below makes that true even across
+    // closing/reopening the fractal itself, so it's certainly true
+    // here, where nothing about the stream changes at all. Only this
+    // banner's own visibility rule needs to know a switch just
+    // happened, not the audio state itself.
+    if (refreshStickyAudioBanner) refreshStickyAudioBanner(name);
     if (navHamburgerMenu && !navHamburgerMenu.hidden) {
       navHamburgerToggle.setAttribute("aria-expanded", "false");
       navHamburgerMenu.hidden = true;
@@ -366,20 +388,47 @@
 
     // --- Sticky live-audio banner ---------------------------------------
     // A positive-state strip along .sticky-nav's own bottom edge (see its
-    // own comment in index.html/styles.css), shown only once BOTH: the
-    // confirm button above has scrolled fully out of view, AND live audio
-    // is actually active -- neither on its own is enough (scrolled past
-    // it before ever granting audio, or granted but still looking at the
-    // button itself, shouldn't show this). Depends on two independent
-    // signals that change at different times -- scroll position (this
-    // observer) and liveAudioActive (the listener above) -- so both call
-    // the same recompute rather than either one owning the toggle
-    // directly.
+    // own comment in index.html/styles.css) -- .sticky-nav itself is
+    // shared chrome, not part of .app-home, so this already sits above
+    // every page; what's below just decides when it should actually be
+    // visible on any of them. On the Start page specifically, shown
+    // only once BOTH the confirm button above has scrolled fully out of
+    // view AND live audio is actually active -- neither on its own is
+    // enough (scrolled past it before ever granting audio, or granted
+    // but still looking at the button itself, shouldn't show this,
+    // since the button already reads as active right there). Off the
+    // Start page (Gallery today, any future page added the same way)
+    // there's no confirm button on screen to be redundant with, so live
+    // audio being active is reason enough on its own -- this is what
+    // makes the reminder persist across a page switch rather than only
+    // ever showing on Start. Depends on signals that change at
+    // different times -- scroll position (the observer below),
+    // liveAudioActive (the listener above), and currentPage (showPage,
+    // in the site-nav section above) -- so all three call this same
+    // recompute rather than any one of them owning the toggle directly.
     let scrolledPastLiveAudioConfirm = false;
     function updateStickyAudioBanner() {
       if (!stickyAudioBanner) return;
-      stickyAudioBanner.classList.toggle("is-visible", scrolledPastLiveAudioConfirm && liveAudioActive);
+      const confirmButtonClear = currentPage !== "start" || scrolledPastLiveAudioConfirm;
+      stickyAudioBanner.classList.toggle("is-visible", liveAudioActive && confirmButtonClear);
     }
+    // showPage passes the page it's switching TO -- arriving at "start"
+    // always lands at scrollY 0 (see showPage itself), which by
+    // definition is never "past" the confirm button further down the
+    // page, so that's forced back to false here rather than left to the
+    // observer below. The observer alone isn't enough for this one
+    // transition: its threshold:0 config only fires on an actual
+    // crossing of "intersecting at all", and going from "not rendered"
+    // (Gallery, height 0) to "rendered but below the viewport" (Start,
+    // scrolled to top) is intersecting:false the whole way through --
+    // no crossing, so no callback, so scrolledPastLiveAudioConfirm would
+    // otherwise still read true from whenever it was last actually
+    // scrolled past, wrongly keeping the banner up right as the confirm
+    // button itself comes back into the flow below.
+    refreshStickyAudioBanner = function (targetPage) {
+      if (targetPage === "start") scrolledPastLiveAudioConfirm = false;
+      updateStickyAudioBanner();
+    };
     if (stickyAudioBanner && liveAudioConfirm && "IntersectionObserver" in window) {
       const stickyAudioBannerObserver = new IntersectionObserver(
         ([entry]) => {
