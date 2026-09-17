@@ -1260,11 +1260,16 @@ main {
 .fractal-gallery {
   max-width: 960px;
   margin: 0 auto 80px;
-  /* Same fix as .start-fractalizing-header/[data-uploads-heading]'s own
-     -- app.js scrollIntoView's here on BROWSE GALLERY/the nav's own
-     Gallery link, and by then .sticky-nav (~57px tall) is already
-     visible, fixed over the true viewport top. */
-  scroll-margin-top: 72px;
+  /* Real padding, not just scroll-margin-top (compare
+     .start-fractalizing-header/[data-uploads-heading]'s own, which get
+     away with scroll-margin-top alone) -- .app-home is hidden by the
+     time this is on screen (see app.js's showPage), so this section is
+     the very first thing in document flow with nothing scrollable
+     above it. scroll-margin-top can't create clearance the page has no
+     room to scroll into; only real padding-top can push this content
+     down clear of .sticky-nav (~57px tall, always visible on this page
+     now) regardless of scroll position. */
+  padding-top: 72px;
 }
 
 .fractal-gallery-title {

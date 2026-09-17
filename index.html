@@ -13,7 +13,7 @@
        commit hash right before each commit that touches either file,
        so it's always one commit behind true HEAD. Worth revisiting
        once this page is more stable and shipping less often. -->
-  <link rel="stylesheet" href="styles.css?v=0cbeba8">
+  <link rel="stylesheet" href="styles.css?v=4e7aed2">
   <link rel="stylesheet" href="fractalize-core/fractalize-core.css?v=21f3120">
 </head>
 <body>
@@ -56,7 +56,7 @@
       <span class="sticky-nav-title">FRACTALIZE STUDIO</span>
 
       <div class="site-nav" data-site-nav>
-        <button type="button" class="site-nav-link" data-nav-link="home" aria-current="page">Home</button>
+        <button type="button" class="site-nav-link" data-nav-link="start" aria-current="page">Start</button>
         <button type="button" class="site-nav-link" data-nav-link="gallery">Gallery</button>
       </div>
 
@@ -67,7 +67,7 @@
           </svg>
         </button>
         <ul class="site-nav-hamburger-menu" data-nav-hamburger-menu hidden>
-          <li><button type="button" class="site-nav-link" data-nav-link="home" aria-current="page">Home</button></li>
+          <li><button type="button" class="site-nav-link" data-nav-link="start" aria-current="page">Start</button></li>
           <li><button type="button" class="site-nav-link" data-nav-link="gallery">Gallery</button></li>
         </ul>
       </div>
@@ -89,13 +89,22 @@
     </div>
   </nav>
 
-  <!-- Positioned/sized entirely by app.js's updateStepConnector, since
-       its two endpoints (➀ in .hero, ➁ in main) live in different
-       containers with a disclosure panel that can be open or closed
-       between them -- see .step-connector's own comment in styles.css. -->
-  <div class="step-connector" data-step-connector hidden aria-hidden="true"></div>
+  <!-- Everything belonging to the "Start" page -- BROWSE GALLERY hides
+       this whole thing (see app.js's showPage) rather than just
+       revealing .fractal-gallery alongside it, so the two never render
+       at once (a visitor mid-way through START FRACTALIZING used to be
+       able to open Gallery and land on both flows stacked together).
+       The Gallery page below is the only sibling "page" right now;
+       Start (the nav's own link back here, see index.html above) is
+       the only way back. -->
+  <div class="app-home" data-app-home>
+    <!-- Positioned/sized entirely by app.js's updateStepConnector, since
+         its two endpoints (➀ in .hero, ➁ in main) live in different
+         containers with a disclosure panel that can be open or closed
+         between them -- see .step-connector's own comment in styles.css. -->
+    <div class="step-connector" data-step-connector hidden aria-hidden="true"></div>
 
-  <header class="hero">
+    <header class="hero">
     <h1 class="hero-title"><img class="hero-logo" src="logo.png" alt="Fractalize Studio"></h1>
     <video class="hero-banner" autoplay loop muted playsinline>
       <source src="hero-banner.webm" type="video/webm">
@@ -303,6 +312,7 @@
       </div>
     </div>
   </main>
+  </div>
 
   <!-- BROWSE GALLERY's own destination (see app.js) -- a plain showcase
        of finished fractal art, unlike .photo-collection above (which
@@ -371,6 +381,6 @@
 
   <script src="photo-catalog.js"></script>
   <script src="fractalize-core/fractalize-core.js?v=21f3120"></script>
-  <script src="app.js?v=0cbeba8"></script>
+  <script src="app.js?v=4e7aed2"></script>
 </body>
 </html>

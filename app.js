@@ -97,13 +97,18 @@
   }
 
   // --- Site nav (pills on desktop, hamburger dropdown on mobile) ------
-  // "Pages" here are really just sections of one long scrolling page
-  // (this site has no routing) -- Home scrolls back to top, Gallery
-  // reveals+scrolls to .fractal-gallery (see below), same "additive
-  // reveal" every other section on this page already uses rather than
-  // hiding/swapping content out. Both nav-link elements for a given
-  // destination (the desktop pill and its hamburger-menu twin -- same
-  // data-nav-link value, see index.html) update together.
+  // Two mutually exclusive "pages" (this site has no routing, so really
+  // just two top-level sections, but truly mutually exclusive now, not
+  // an "additive reveal" the way every other section on this page still
+  // is): .app-home (the whole START FRACTALIZING flow, wherever it's
+  // gotten to) and .fractal-gallery. Showing one always hides the
+  // other -- BROWSE GALLERY used to just reveal the gallery ALONGSIDE
+  // .app-home, so a visitor mid-way through START FRACTALIZING could
+  // end up with the live-audio panel and gallery both on screen at
+  // once. Both nav-link elements for a given destination (the desktop
+  // pill and its hamburger-menu twin -- same data-nav-link value, see
+  // index.html) update together.
+  const appHome = document.querySelector("[data-app-home]");
   const fractalGallery = document.querySelector("[data-fractal-gallery]");
 
   function setActiveNavLink(name) {
@@ -113,18 +118,43 @@
     });
   }
 
-  function goToSection(name) {
+  function showPage(name) {
     setActiveNavLink(name);
-    if (name === "gallery" && fractalGallery) {
+    if (name === "gallery" && fractalGallery && appHome) {
+      appHome.hidden = true;
       fractalGallery.hidden = false;
-      // Deferred a frame so the reflow from unhiding above settles
-      // first -- same reasoning as openStartPanel's own deferred
-      // scrollIntoView elsewhere in this file.
+      // .sticky-nav's own IntersectionObserver (above) would eventually
+      // reach the same is-visible state on its own -- .hero-logo just
+      // went from on-screen to not-rendered-at-all, which counts as
+      // "not intersecting" -- but only once that callback actually
+      // fires. Setting it directly here means the nav (a visitor's only
+      // way back to Start now) is never left invisible for even a
+      // frame right when there's nothing else on screen to reach it
+      // with.
+      if (stickyNav) stickyNav.classList.add("is-visible");
+      // Deferred a frame so the reflow from hiding .app-home (likely
+      // 1000+px of content) settles first -- same reasoning as
+      // openStartPanel's own deferred scrollIntoView elsewhere in this
+      // file. scrollIntoView (not scrollTo(0,0)) so .fractal-gallery's
+      // own scroll-margin-top clears the now-visible nav bar instead of
+      // landing right underneath it. Instant, not smooth -- this is a
+      // full page swap now, not an in-page reveal, and a visitor could
+      // be scrolled anywhere (deep in .photo-collection, say) when they
+      // trigger it; smooth-scrolling that whole distance through
+      // content that's about to disappear reads as a stutter, not a
+      // transition.
       requestAnimationFrame(() => {
-        fractalGallery.scrollIntoView({ behavior: "smooth", block: "start" });
+        fractalGallery.scrollIntoView({ behavior: "auto", block: "start" });
       });
-    } else {
-      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else if (fractalGallery && appHome) {
+      fractalGallery.hidden = true;
+      appHome.hidden = false;
+      // Mirrors the forced is-visible above -- .hero-logo is back on
+      // screen the instant appHome un-hides, but the observer callback
+      // still needs a frame to catch up; this keeps the nav from
+      // sitting over the hero for even that one frame.
+      if (stickyNav) stickyNav.classList.remove("is-visible");
+      window.scrollTo(0, 0);
     }
     if (navHamburgerMenu && !navHamburgerMenu.hidden) {
       navHamburgerToggle.setAttribute("aria-expanded", "false");
@@ -135,11 +165,11 @@
   document.addEventListener("click", (e) => {
     const link = e.target.closest("[data-nav-link]");
     if (!link) return;
-    goToSection(link.dataset.navLink);
+    showPage(link.dataset.navLink);
   });
 
   const browseGalleryBtn = document.querySelector("[data-browse-gallery]");
-  if (browseGalleryBtn) browseGalleryBtn.addEventListener("click", () => goToSection("gallery"));
+  if (browseGalleryBtn) browseGalleryBtn.addEventListener("click", () => showPage("gallery"));
 
   // Mobile hamburger dropdown: same open/close-on-outside-click pattern
   // tuckermills-portfolio's own router.js uses for its equivalent menu.
