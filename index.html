@@ -13,7 +13,7 @@
        commit hash right before each commit that touches either file,
        so it's always one commit behind true HEAD. Worth revisiting
        once this page is more stable and shipping less often. -->
-  <link rel="stylesheet" href="styles.css?v=1b2958d">
+  <link rel="stylesheet" href="styles.css?v=0cbeba8">
   <link rel="stylesheet" href="fractalize-core/fractalize-core.css?v=21f3120">
 </head>
 <body>
@@ -43,9 +43,36 @@
   <!-- Appears once .hero-logo scrolls out of view (see app.js's
        IntersectionObserver) -- a compact reminder of what page you're
        on once the full hero (logo + banner + tagline) has scrolled
-       past. -->
+       past, same role tuckermills.com's own .site-header plays on its
+       non-home pages (hidden on home there since the hero's own start
+       buttons already cover navigation -- BROWSE GALLERY/START
+       FRACTALIZING do the same job here). Same structural pattern as
+       that header otherwise: a pill nav on desktop, collapsing to a
+       hamburger dropdown below this page's own 600px breakpoint (see
+       styles.css) -- just styled with fractalize.studio's own glass
+       language instead of tuckermills.com's. -->
   <nav class="sticky-nav" data-sticky-nav>
-    <span class="sticky-nav-title">FRACTALIZE STUDIO</span>
+    <div class="sticky-nav-inner">
+      <span class="sticky-nav-title">FRACTALIZE STUDIO</span>
+
+      <div class="site-nav" data-site-nav>
+        <button type="button" class="site-nav-link" data-nav-link="home" aria-current="page">Home</button>
+        <button type="button" class="site-nav-link" data-nav-link="gallery">Gallery</button>
+      </div>
+
+      <div class="site-nav-hamburger">
+        <button type="button" class="site-nav-hamburger-toggle" data-nav-hamburger-toggle aria-haspopup="true" aria-expanded="false" aria-label="Menu">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20px" height="20px" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round">
+            <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+          </svg>
+        </button>
+        <ul class="site-nav-hamburger-menu" data-nav-hamburger-menu hidden>
+          <li><button type="button" class="site-nav-link" data-nav-link="home" aria-current="page">Home</button></li>
+          <li><button type="button" class="site-nav-link" data-nav-link="gallery">Gallery</button></li>
+        </ul>
+      </div>
+    </div>
+
     <!-- A second, independent reminder locked directly beneath this
          bar (not overlapping its own text -- see its own comment in
          styles.css) -- shown only once BOTH the [data-live-audio-confirm]
@@ -277,6 +304,33 @@
     </div>
   </main>
 
+  <!-- BROWSE GALLERY's own destination (see app.js) -- a plain showcase
+       of finished fractal art, unlike .photo-collection above (which
+       picks a SOURCE photo to fractalize). Hidden until first opened,
+       same as every other section on this page that isn't there from
+       the start -- stays revealed afterward rather than hiding itself
+       again once you scroll away, same "additive reveal" convention
+       .photo-collection/.start-panel already use. -->
+  <section class="fractal-gallery" data-fractal-gallery hidden>
+    <h2 class="fractal-gallery-title">GALLERY</h2>
+    <div class="fractal-gallery-list">
+      <figure class="fractal-gallery-item">
+        <figcaption class="fractal-gallery-item-title">CAMELLIA</figcaption>
+        <img
+          class="fractal-gallery-item-img"
+          src="https://www.tuckermills.com/Images/Fractal%20Gallery/camellia-fractal-sample.png"
+          alt="Camellia fractal sample"
+          loading="lazy"
+          decoding="async"
+          data-gallery-img
+          tabindex="0"
+          role="button"
+          aria-label="Open Camellia fractal sample full size"
+        >
+      </figure>
+    </div>
+  </section>
+
   <footer class="site-footer">
     <p>Curated photos from <a href="https://www.tuckermills.com" target="_blank" rel="noopener">tuckermills.com</a>. Your own uploads never leave your browser.</p>
   </footer>
@@ -305,8 +359,18 @@
     </div>
   </div>
 
+  <!-- Gallery's own lightbox -- a plain full-size view, not the tap
+       popup above (no Fractalize/Liquid Rippler actions here, since
+       these ARE the finished fractal art, not a source photo to open
+       either overlay on). Same backdrop-click-to-close pattern as
+       every other overlay on this page. -->
+  <div class="gallery-lightbox" data-gallery-lightbox hidden>
+    <button type="button" class="gallery-lightbox-close" data-gallery-lightbox-close aria-label="Close">&times;</button>
+    <img class="gallery-lightbox-img" data-gallery-lightbox-img alt="">
+  </div>
+
   <script src="photo-catalog.js"></script>
   <script src="fractalize-core/fractalize-core.js?v=21f3120"></script>
-  <script src="app.js?v=64494f3"></script>
+  <script src="app.js?v=0cbeba8"></script>
 </body>
 </html>

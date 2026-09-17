@@ -96,6 +96,108 @@
     stickyNavObserver.observe(heroLogo);
   }
 
+  // --- Site nav (pills on desktop, hamburger dropdown on mobile) ------
+  // "Pages" here are really just sections of one long scrolling page
+  // (this site has no routing) -- Home scrolls back to top, Gallery
+  // reveals+scrolls to .fractal-gallery (see below), same "additive
+  // reveal" every other section on this page already uses rather than
+  // hiding/swapping content out. Both nav-link elements for a given
+  // destination (the desktop pill and its hamburger-menu twin -- same
+  // data-nav-link value, see index.html) update together.
+  const fractalGallery = document.querySelector("[data-fractal-gallery]");
+
+  function setActiveNavLink(name) {
+    document.querySelectorAll("[data-nav-link]").forEach((link) => {
+      if (link.dataset.navLink === name) link.setAttribute("aria-current", "page");
+      else link.removeAttribute("aria-current");
+    });
+  }
+
+  function goToSection(name) {
+    setActiveNavLink(name);
+    if (name === "gallery" && fractalGallery) {
+      fractalGallery.hidden = false;
+      // Deferred a frame so the reflow from unhiding above settles
+      // first -- same reasoning as openStartPanel's own deferred
+      // scrollIntoView elsewhere in this file.
+      requestAnimationFrame(() => {
+        fractalGallery.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    } else {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+    if (navHamburgerMenu && !navHamburgerMenu.hidden) {
+      navHamburgerToggle.setAttribute("aria-expanded", "false");
+      navHamburgerMenu.hidden = true;
+    }
+  }
+
+  document.addEventListener("click", (e) => {
+    const link = e.target.closest("[data-nav-link]");
+    if (!link) return;
+    goToSection(link.dataset.navLink);
+  });
+
+  const browseGalleryBtn = document.querySelector("[data-browse-gallery]");
+  if (browseGalleryBtn) browseGalleryBtn.addEventListener("click", () => goToSection("gallery"));
+
+  // Mobile hamburger dropdown: same open/close-on-outside-click pattern
+  // tuckermills-portfolio's own router.js uses for its equivalent menu.
+  const navHamburgerToggle = document.querySelector("[data-nav-hamburger-toggle]");
+  const navHamburgerMenu = document.querySelector("[data-nav-hamburger-menu]");
+  if (navHamburgerToggle && navHamburgerMenu) {
+    navHamburgerToggle.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const expanded = navHamburgerToggle.getAttribute("aria-expanded") === "true";
+      navHamburgerToggle.setAttribute("aria-expanded", String(!expanded));
+      navHamburgerMenu.hidden = expanded;
+    });
+    document.addEventListener("click", () => {
+      navHamburgerToggle.setAttribute("aria-expanded", "false");
+      navHamburgerMenu.hidden = true;
+    });
+  }
+
+  // --- Gallery lightbox -------------------------------------------------
+  // Full-size view for a tapped .fractal-gallery image -- plain, no
+  // Fractalize/Liquid Rippler actions (see its own comment in
+  // styles.css). Wired generically over every [data-gallery-img] so a
+  // future second/third gallery entry needs no JS changes of its own.
+  const galleryLightbox = document.querySelector("[data-gallery-lightbox]");
+  const galleryLightboxImg = document.querySelector("[data-gallery-lightbox-img]");
+  const galleryLightboxClose = document.querySelector("[data-gallery-lightbox-close]");
+  function openGalleryLightbox(src, alt) {
+    if (!galleryLightbox) return;
+    galleryLightboxImg.src = src;
+    galleryLightboxImg.alt = alt || "";
+    galleryLightbox.hidden = false;
+  }
+  function closeGalleryLightbox() {
+    if (!galleryLightbox) return;
+    galleryLightbox.hidden = true;
+    galleryLightboxImg.src = "";
+  }
+  if (galleryLightbox && galleryLightboxImg && galleryLightboxClose) {
+    galleryLightboxClose.addEventListener("click", closeGalleryLightbox);
+    // Only a click landing directly on the backdrop itself closes this --
+    // .gallery-lightbox-img/-close are different elements than e.target
+    // then, no stopPropagation() needed on either.
+    galleryLightbox.addEventListener("click", (e) => {
+      if (e.target === galleryLightbox) closeGalleryLightbox();
+    });
+    document.querySelectorAll("[data-gallery-img]").forEach((img) => {
+      img.addEventListener("click", () => openGalleryLightbox(img.currentSrc || img.src, img.alt));
+      // role="button"/tabindex="0" on these images (see index.html) means
+      // a keyboard visitor can focus one -- Enter/Space is what a real
+      // <button> would already do for free.
+      img.addEventListener("keydown", (e) => {
+        if (e.key !== "Enter" && e.key !== " ") return;
+        e.preventDefault();
+        openGalleryLightbox(img.currentSrc || img.src, img.alt);
+      });
+    });
+  }
+
   // --- "Start fractalizing" panel -------------------------------------
   // The page's own live-audio entry point (see index.html) -- resolve
   // live audio first, then reveal a "PICK YOUR IMAGE" step rather than

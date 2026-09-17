@@ -341,6 +341,27 @@ a {
 .sticky-nav.is-visible {
   opacity: 1;
   transform: translateY(0);
+  /* The bar's only ever interactive now that it holds real nav links
+     (previously just "FRACTALIZE STUDIO" text, so this never mattered)
+     -- re-enable clicks once actually visible; the base rule's own
+     none keeps it from intercepting anything while still faded/
+     off-screen above. */
+  pointer-events: auto;
+}
+
+/* Constrains the bar's own content to the same 960px column every
+   other section on this page uses (see main below), rather than
+   letting title/nav spread to the viewport's full width the way
+   .sticky-nav itself (a fixed, edge-to-edge bar) needs to for its own
+   background/blur to reach both edges. */
+.sticky-nav-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
 }
 
 .sticky-nav-title {
@@ -348,6 +369,117 @@ a {
   font-weight: 700;
   letter-spacing: 0.06em;
   color: #fff;
+  white-space: nowrap;
+}
+
+/* --- Site nav (pills on desktop, hamburger dropdown on mobile) -------- */
+/* Same structural pattern as tuckermills.com's own header nav -- a
+   row of pill links that collapses into a single hamburger button +
+   dropdown below this page's one breakpoint -- styled with this page's
+   own glass/pill language (.action-btn-secondary, the fractal
+   toolbar's own buttons) instead of copying that site's look. */
+.site-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.site-nav-link {
+  appearance: none;
+  -webkit-appearance: none;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.site-nav-link:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.site-nav-link[aria-current="page"] {
+  border-color: #fff;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.site-nav-hamburger {
+  position: relative;
+  display: none;
+}
+
+@media (max-width: 600px) {
+  .site-nav {
+    display: none;
+  }
+
+  .site-nav-hamburger {
+    display: block;
+  }
+}
+
+.site-nav-hamburger-toggle {
+  appearance: none;
+  -webkit-appearance: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.site-nav-hamburger-toggle:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Same glass-sheet language as the fractal toolbar/panels (see
+   fractalize-core.css) rather than tuckermills.com's own flat, more
+   opaque dropdown -- floats over whatever's scrolled beneath it. */
+.site-nav-hamburger-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 160px;
+  list-style: none;
+  margin: 0;
+  padding: 6px;
+  background: rgba(20, 20, 20, 0.92);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+}
+
+.site-nav-hamburger-menu .site-nav-link {
+  display: block;
+  width: 100%;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  text-align: left;
+  padding: 10px 12px;
+}
+
+.site-nav-hamburger-menu .site-nav-link:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.site-nav-hamburger-menu .site-nav-link[aria-current="page"] {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.site-nav-hamburger-menu li + li {
+  margin-top: 2px;
 }
 
 /* A second reminder riding directly below .sticky-nav (see its own
@@ -1118,6 +1250,129 @@ main {
   background-size: 400% 400%;
   background-attachment: fixed;
   animation: positive-state-animated 8s ease infinite;
+}
+
+/* --- Gallery page (BROWSE GALLERY's own destination) ------------------ */
+/* A plain showcase, deliberately simpler than .catalog above (no
+   thumb-actions, no fractalize/visualize wiring) -- each entry is just
+   its own title followed by its image, stacked. Same 960px column as
+   main. */
+.fractal-gallery {
+  max-width: 960px;
+  margin: 0 auto 80px;
+  /* Same fix as .start-fractalizing-header/[data-uploads-heading]'s own
+     -- app.js scrollIntoView's here on BROWSE GALLERY/the nav's own
+     Gallery link, and by then .sticky-nav (~57px tall) is already
+     visible, fixed over the true viewport top. */
+  scroll-margin-top: 72px;
+}
+
+.fractal-gallery-title {
+  text-align: left;
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #fff;
+  margin: 0 0 32px;
+}
+
+.fractal-gallery-list {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.fractal-gallery-item {
+  margin: 0;
+}
+
+.fractal-gallery-item-title {
+  text-align: left;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.85);
+  margin: 0 0 12px;
+}
+
+.fractal-gallery-item-img {
+  display: block;
+  width: 100%;
+  /* 25% max-width on desktop, up to 80% on mobile (see the 600px
+     override below) -- these are samples to admire, not full-bleed
+     hero art, so they stay modestly sized even at their cap. */
+  max-width: 25%;
+  height: auto;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.fractal-gallery-item-img:hover {
+  opacity: 0.9;
+}
+
+@media (max-width: 600px) {
+  .fractal-gallery-item-img {
+    max-width: 80%;
+  }
+}
+
+/* --- Gallery lightbox --------------------------------------------------- */
+/* Full-size view for a tapped gallery image -- no fractalize/visualize
+   actions (unlike .photo-preview-overlay above), since these ARE the
+   finished art already. Same fixed/centered/backdrop-click-to-close
+   shell as that overlay, object-fit: contain instead of cover since
+   there's no fixed frame to crop into here. */
+.gallery-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(0, 0, 0, 0.85);
+}
+
+.gallery-lightbox[hidden] {
+  display: none;
+}
+
+.gallery-lightbox-img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+.gallery-lightbox-close {
+  appearance: none;
+  -webkit-appearance: none;
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  background: rgba(20, 20, 20, 0.78);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: #fff;
+  font-size: 1.6rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.gallery-lightbox-close:hover {
+  background: rgba(20, 20, 20, 0.92);
 }
 
 /* --- Footer ----------------------------------------------------------- */
