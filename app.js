@@ -826,7 +826,7 @@
     uploadsCard.innerHTML = collectionCardHtml(
       uploadedPhotoRecords.length ? uploadedPhotoRecords[0].url : null,
       "Your Uploads",
-      "Your own uploads never leave your browser."
+      "Your own uploads never leave your browser or device."
     );
     uploadsCard.addEventListener("click", openUploadsCollection);
     collectionCardsEl.appendChild(uploadsCard);
