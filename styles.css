@@ -34,6 +34,14 @@ body {
   font-family: system-ui, sans-serif;
   line-height: 1.5;
   padding: 0 20px;
+  /* Sticky-footer layout: body is at least one viewport tall (dvh so
+     mobile browser chrome doesn't cause a gap/overscroll), and the
+     footer's auto top margin absorbs any leftover space. Short pages
+     pin the footer to the window bottom; long pages just flow. */
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
 }
 
 a {
@@ -1401,7 +1409,9 @@ body.has-audio-banner .fractal-gallery {
 
 .site-footer {
   max-width: 720px;
-  margin: 0 auto;
+  margin: auto auto 0;
+  width: 100%;
+  box-sizing: border-box;
   padding: 24px 0 64px;
   text-align: center;
   font-size: 0.8rem;
