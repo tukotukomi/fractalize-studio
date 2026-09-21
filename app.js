@@ -460,16 +460,6 @@
       stickyAudioBannerObserver.observe(liveAudioConfirm);
     }
 
-    function launchRandomFractal() {
-      const pool = [];
-      (window.FRACTALIZE_CATALOG || []).forEach((group) => {
-        group.photos.forEach((photo) => pool.push(photo));
-      });
-      if (!pool.length) return;
-      const photo = pool[Math.floor(Math.random() * pool.length)];
-      window.FractalizeCore.openFractal(photo.src);
-    }
-
     function openStartPanel() {
       startPanel.hidden = false;
       startBtn.setAttribute("aria-expanded", "true");
@@ -597,9 +587,16 @@
       startPanelCheckbox.dispatchEvent(new Event("change", { bubbles: true }));
     });
 
+    // Skips the live-audio grant but continues the guided flow: goes
+    // straight on to step 2, exactly as if the visitor had reached and
+    // clicked PICK YOUR IMAGE -- reveals the photo-collection card view
+    // and leaves the confirm button behind so step 1 can still be
+    // revisited.
     startPanelSkipBtn.addEventListener("click", () => {
-      closeStartPanel();
-      launchRandomFractal();
+      if (pickImageStep) pickImageStep.hidden = true;
+      if (pickImageRow) pickImageRow.hidden = false;
+      if (pickImageBtn) pickImageBtn.click();
+      else closeStartPanel();
     });
 
     if (pickImageBtn && photoCollection) {
