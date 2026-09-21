@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex">
+  <title>Fractalize Remote</title>
+  <link rel="stylesheet" href="remote.css">
+</head>
+<body>
+  <header class="remote-bar">
+    <h1 class="remote-title">Fractalize Remote</h1>
+    <p class="remote-status" data-status role="status">Connecting…</p>
+    <nav class="remote-tabs" data-tabs hidden>
+      <button type="button" class="remote-tab is-active" data-tab="filters">Filters</button>
+      <button type="button" class="remote-tab" data-tab="roll">Camera roll</button>
+    </nav>
+  </header>
+
+  <main class="remote-main">
+    <p class="remote-message" data-message hidden></p>
+    <section class="remote-panel" data-panel="filters" hidden>
+      <div class="remote-controls" data-controls></div>
+      <div class="remote-block" data-randomizer></div>
+    </section>
+    <section class="remote-panel" data-panel="roll" hidden>
+      <div class="remote-block" data-shuffle></div>
+      <div data-roll></div>
+    </section>
+  </main>
+
+  <script src="../photo-catalog.js"></script>
+  <script src="../relay-config.js"></script>
+  <script src="remote.js"></script>
+</body>
+</html>

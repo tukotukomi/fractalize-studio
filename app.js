@@ -1057,6 +1057,10 @@
   // catalog refresh). Set once at load, well before a visitor could
   // ever open either overlay.
   window.FractalizeCore.setUploadHandler(saveFilesToUploads);
+  // Phone remote: only enabled once relay-config.js has a Worker URL.
+  if (window.FRACTALIZE_RELAY_URL) {
+    window.FractalizeCore.setRemoteRelay(window.FRACTALIZE_RELAY_URL, location.origin + "/remote/");
+  }
 
   // Initial card grid render -- uploads haven't loaded from IndexedDB
   // yet at this point (that's async, see above), so Your Uploads' own

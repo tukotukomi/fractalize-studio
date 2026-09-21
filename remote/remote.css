@@ -1,0 +1,246 @@
+:root {
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: #0a0c0e;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+  line-height: 1.4;
+  color: #fff;
+  background: #0a0c0e;
+  -webkit-text-size-adjust: 100%;
+}
+
+.remote-bar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  padding: calc(12px + env(safe-area-inset-top, 0px)) 16px 10px;
+  background: rgba(10, 12, 14, 0.96);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.remote-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.remote-status {
+  margin: 2px 0 0;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.remote-status.is-ok {
+  color: #7be495;
+}
+
+.remote-tabs {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.remote-tab {
+  flex: 1;
+  appearance: none;
+  -webkit-appearance: none;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 999px;
+  background: transparent;
+  color: #fff;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 10px 12px;
+  cursor: pointer;
+}
+
+.remote-tab.is-active {
+  background: #fff;
+  color: #111;
+  border-color: #fff;
+}
+
+.remote-main {
+  padding: 16px 16px calc(40px + env(safe-area-inset-bottom, 0px));
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.remote-message {
+  margin: 24px 0;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.remote-row {
+  margin-bottom: 20px;
+}
+
+.remote-row-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.remote-value {
+  font-variant-numeric: tabular-nums;
+  color: #fff;
+}
+
+.remote-row input[type="range"] {
+  width: 100%;
+  height: 32px;
+  accent-color: #fff;
+}
+
+.remote-toggle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.remote-toggle input {
+  width: 22px;
+  height: 22px;
+  accent-color: #fff;
+  flex: none;
+}
+
+.remote-hint {
+  margin: 6px 0 0;
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.remote-divider {
+  border: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.25);
+  margin: 22px 0;
+}
+
+.remote-block {
+  margin: 0 0 20px;
+}
+
+.remote-block-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+  font-size: 0.95rem;
+}
+
+.remote-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.remote-pill,
+.remote-action {
+  appearance: none;
+  -webkit-appearance: none;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 999px;
+  background: transparent;
+  color: #fff;
+  font: inherit;
+  font-size: 0.85rem;
+  padding: 9px 14px;
+  cursor: pointer;
+}
+
+.remote-pill.is-active {
+  background: #fff;
+  color: #111;
+  border-color: #fff;
+}
+
+.remote-action {
+  background: #fff;
+  color: #111;
+  border-color: #fff;
+  font-weight: 700;
+  margin-top: 12px;
+}
+
+.roll-section-label {
+  margin: 18px 0 10px;
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.roll-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.roll-thumb {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #1a1c1f;
+  border: 2px solid transparent;
+  padding: 0;
+  cursor: pointer;
+}
+
+.roll-thumb img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+.roll-thumb.is-playing {
+  border-color: #fff;
+}
+
+.roll-queue {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  font-size: 1.1rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.roll-thumb.is-queued .roll-queue {
+  background: #fff;
+  color: #111;
+}
+
+[hidden] {
+  display: none !important;
+}
