@@ -109,6 +109,42 @@ body {
   accent-color: #fff;
 }
 
+/* Randomizer lock (only on the three lockable sliders -- see c.lockable
+   in remote.js): same round-icon-button-to-the-left-of-the-slider
+   layout as the desktop panel's own .fractal-controls-slider-row/
+   .fractal-controls-lock, just at this page's own touch-friendly size. */
+.remote-slider-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.remote-slider-row input[type="range"] {
+  flex: 1;
+  min-width: 0;
+  width: auto;
+}
+
+.remote-lock {
+  flex: none;
+  appearance: none;
+  -webkit-appearance: none;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+}
+
+.remote-lock.is-active {
+  background: #fff;
+  border-color: #fff;
+}
+
 .remote-toggle {
   display: flex;
   align-items: center;
